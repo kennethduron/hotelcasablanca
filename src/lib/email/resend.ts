@@ -1,0 +1,15 @@
+import { Resend } from "resend";
+
+let resend: Resend | null = null;
+
+export function getResend() {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("Resend no esta configurado. Define RESEND_API_KEY.");
+  }
+
+  if (!resend) {
+    resend = new Resend(process.env.RESEND_API_KEY);
+  }
+
+  return resend;
+}

@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fbf7ef;
+  --foreground: #092c1f;
+  --hotel-forest: #002f22;
+  --hotel-forest-900: #001f16;
+  --hotel-forest-800: #063a2a;
+  --hotel-gold: #d6a85f;
+  --hotel-gold-700: #b98737;
+  --hotel-cream: #fbf7ef;
+  --hotel-ivory: #fffdf7;
+  --hotel-sage: #dfe9d6;
+  --hotel-ink: #10231b;
+  --hotel-muted: #756f64;
+  --hotel-line: #e8dece;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-hotel-forest: var(--hotel-forest);
+  --color-hotel-forest-900: var(--hotel-forest-900);
+  --color-hotel-forest-800: var(--hotel-forest-800);
+  --color-hotel-gold: var(--hotel-gold);
+  --color-hotel-gold-700: var(--hotel-gold-700);
+  --color-hotel-cream: var(--hotel-cream);
+  --color-hotel-ivory: var(--hotel-ivory);
+  --color-hotel-sage: var(--hotel-sage);
+  --color-hotel-ink: var(--hotel-ink);
+  --color-hotel-muted: var(--hotel-muted);
+  --color-hotel-line: var(--hotel-line);
+  --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --shadow-hotel-soft: 0 18px 45px rgb(20 30 24 / 0.1);
+  --shadow-hotel-card: 0 12px 30px rgb(10 35 25 / 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), "Geist", "Geist Fallback", ui-sans-serif,
+    system-ui, sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--hotel-gold);
+  color: var(--hotel-forest-900);
+}
+
+.hotel-container {
+  margin-inline: auto;
+  width: min(100% - 2rem, 1180px);
+}
+
+.hotel-serif {
+  font-family: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+}
+
+.hotel-surface {
+  background:
+    radial-gradient(circle at top left, rgb(214 168 95 / 0.1), transparent 28rem),
+    var(--hotel-cream);
+}
+
+.hotel-gold-gradient {
+  background: linear-gradient(135deg, #e2bd78 0%, #c49146 100%);
+}
+
+.hotel-dark-gradient {
+  background:
+    linear-gradient(135deg, rgb(0 47 34 / 0.98), rgb(0 31 22 / 0.98)),
+    radial-gradient(circle at 75% 20%, rgb(214 168 95 / 0.2), transparent 24rem);
+}
+
+.leaflet-container {
+  z-index: 0;
+}

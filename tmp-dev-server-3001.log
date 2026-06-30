@@ -1,0 +1,56 @@
+
+> hotelcasablanca-next@0.1.0 dev
+> next dev --port 3001
+
+▲ Next.js 16.2.9 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.1.3:3001
+✓ Ready in 594ms
+Creating turbopack project {
+  dir: 'C:\\Users\\user\\OneDrive\\Documentos\\Kenneth\\Kenneth_Projects\\hotelcasablanca',
+  testMode: true
+}
+
+○ Compiling / ...
+ HEAD / 200 in 4.9s (next.js: 4.4s, application-code: 557ms)
+ GET / 200 in 601ms (next.js: 8ms, application-code: 593ms)
+ GET /icon?7ee23d20d86c9dad 200 in 784ms (next.js: 623ms, application-code: 161ms)
+ GET / 200 in 263ms (next.js: 10ms, application-code: 252ms)
+ GET /icon?7ee23d20d86c9dad 200 in 22ms (next.js: 4ms, application-code: 18ms)
+ GET /entorno 200 in 593ms (next.js: 512ms, application-code: 81ms)
+ GET / 200 in 83ms (next.js: 5ms, application-code: 78ms)
+ GET /habitaciones 200 in 493ms (next.js: 420ms, application-code: 73ms)
+ GET /reservar 200 in 545ms (next.js: 507ms, application-code: 38ms)
+ GET / 200 in 258ms (next.js: 8ms, application-code: 250ms)
+ GET /icon?7ee23d20d86c9dad 200 in 45ms (next.js: 4ms, application-code: 41ms)
+ GET /contacto 200 in 489ms (next.js: 405ms, application-code: 84ms)
+ GET / 200 in 56ms (next.js: 3ms, application-code: 53ms)
+ GET /entorno 200 in 52ms (next.js: 3ms, application-code: 49ms)
+ GET /entorno 200 in 70ms (next.js: 5ms, application-code: 65ms)
+ GET /entorno 200 in 58ms (next.js: 5ms, application-code: 52ms)
+ GET /servicios 200 in 781ms (next.js: 702ms, application-code: 78ms)
+ GET /entorno 200 in 60ms (next.js: 5ms, application-code: 56ms)
+ GET /entorno 200 in 69ms (next.js: 5ms, application-code: 64ms)
+ GET /entorno 200 in 293ms (next.js: 6ms, application-code: 288ms)
+ GET /entorno 200 in 71ms (next.js: 7ms, application-code: 63ms)
+✓ Compiled in 117ms
+ GET / 500 in 2.7s (next.js: 2.5s, application-code: 166ms)
+ GET / 200 in 483ms (next.js: 139ms, application-code: 344ms)
+ GET / 200 in 221ms (next.js: 3ms, application-code: 218ms)
+ GET / 200 in 154ms (next.js: 4ms, application-code: 149ms)
+ GET / 200 in 155ms (next.js: 63ms, application-code: 92ms)
+ GET / 500 in 54ms (next.js: 35ms, application-code: 19ms)
+ GET / 500 in 26ms (next.js: 11ms, application-code: 15ms)
+ GET / 500 in 21ms (next.js: 7ms, application-code: 14ms)
+ GET / 500 in 41ms (next.js: 18ms, application-code: 23ms)
+✓ Compiled in 2.5s
+ GET / 500 in 35ms (next.js: 25ms, application-code: 11ms)
+✓ Compiled in 884ms
+ GET / 200 in 903ms (next.js: 287ms, application-code: 616ms)
+ GET / 200 in 604ms (next.js: 199ms, application-code: 405ms)
+ GET /icon?7ee23d20d86c9dad 200 in 86ms (next.js: 53ms, application-code: 33ms)
+✓ Compiled in 49ms
+ GET / 200 in 465ms (next.js: 195ms, application-code: 270ms)
+ GET / 200 in 157ms (next.js: 5ms, application-code: 152ms)
+ GET / 200 in 94ms (next.js: 4ms, application-code: 90ms)
+ GET /icon?7ee23d20d86c9dad 200 in 78ms (next.js: 57ms, application-code: 21ms)
