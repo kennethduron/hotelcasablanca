@@ -3,7 +3,7 @@ import type { Room } from "@/types/hotel";
 export const rooms: Room[] = [
   {
     id: "habitacion-ejecutiva",
-    name: "Habitacion Ejecutiva",
+    name: "Habitación Ejecutiva",
     category: "ejecutiva",
     description: "Privacidad y confort para su estancia de negocios.",
     price: 1100,
@@ -22,14 +22,14 @@ export const rooms: Room[] = [
     price: 2380,
     capacity: 2,
     beds: 1,
-    amenities: ["Wi-Fi", "Sala privada", "Vista al jardin", "Mini bar"],
+    amenities: ["Wi-Fi", "Sala privada", "Vista al jardín", "Mini bar"],
     image:
       "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=85",
     status: "Disponible",
   },
   {
     id: "habitacion-doble",
-    name: "Habitacion Doble",
+    name: "Habitación Doble",
     category: "doble",
     description: "Espacio ideal para familias o grupos de trabajo.",
     price: 1300,

@@ -14,7 +14,7 @@ import { rooms as localRooms } from "@/data/rooms";
 import { mainServices as localServices } from "@/data/services";
 import { firestoreCollections } from "@/lib/firebase/collections";
 import { getFirebaseDb, hasFirebaseConfig } from "@/lib/firebase/client";
-import type { Destination, Room } from "@/types/hotel";
+import type { Destination, PreferredContactMethod, Reservation, Room } from "@/types/hotel";
 
 export interface ContactMessageInput {
   name: string;
@@ -22,6 +22,31 @@ export interface ContactMessageInput {
   phone?: string;
   subject: string;
   message: string;
+}
+
+export interface CreateReservationInput {
+  guestName: string;
+  guestEmail: string;
+  guestPhone: string;
+  guestCountry: string;
+  guestDocumentNumber: string;
+  guestDocumentType: string;
+  guestAddress?: string;
+  roomId: string;
+  roomName: string;
+  checkIn: string;
+  checkOut: string;
+  adults: number;
+  children: number;
+  nights: number;
+  plan: string;
+  ratePerNight: number;
+  taxes: number;
+  notes?: string;
+  total: number;
+  preferredContactMethod: PreferredContactMethod;
+  termsAccepted: boolean;
+  dataProcessingAccepted: boolean;
 }
 
 export interface GalleryImage {
@@ -92,6 +117,46 @@ export async function createContactMessage(input: ContactMessageInput) {
 
   return {
     id: result.id,
+    status: "created",
+  };
+}
+
+export async function createReservation(input: CreateReservationInput) {
+  const now = new Date().toISOString();
+  const reservationBase = {
+    ...input,
+    status: "Pendiente de revisión" as const,
+    paymentStatus: "Pendiente" as const,
+    paymentLink: "",
+    approvedBy: "",
+    confirmedBy: "",
+  };
+
+  if (!hasFirebaseConfig()) {
+    return {
+      reservation: {
+        id: `demo-reservation-${Date.now()}`,
+        ...reservationBase,
+        createdAt: now,
+        updatedAt: now,
+      } satisfies Reservation,
+      status: "demo",
+    };
+  }
+
+  const result = await addDoc(collection(getFirebaseDb(), firestoreCollections.reservations), {
+    ...reservationBase,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+
+  return {
+    reservation: {
+      id: result.id,
+      ...reservationBase,
+      createdAt: now,
+      updatedAt: now,
+    } satisfies Reservation,
     status: "created",
   };
 }

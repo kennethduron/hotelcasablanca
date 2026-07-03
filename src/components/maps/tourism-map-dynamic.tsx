@@ -10,7 +10,7 @@ export const TourismMapDynamic = dynamic<{
 }>(() => import("@/components/maps/tourism-map").then((mod) => mod.TourismMap), {
   ssr: false,
   loading: () => (
-    <div className="grid h-[480px] place-items-center rounded-[8px] border border-hotel-line bg-hotel-ivory text-sm text-hotel-muted shadow-hotel-card">
+    <div className="grid h-[520px] place-items-center rounded-[8px] border border-hotel-line bg-hotel-ivory text-sm text-hotel-muted shadow-hotel-card">
       Cargando mapa interactivo...
     </div>
   ),

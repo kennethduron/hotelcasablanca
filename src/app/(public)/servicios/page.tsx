@@ -1,10 +1,10 @@
+import { Bell, ConciergeBell, ShieldCheck, Shirt, Wifi } from "lucide-react";
 import type { Metadata } from "next";
-import { Bell, ShieldCheck, Shirt, Wifi, ConciergeBell } from "lucide-react";
 
 import { PageHero } from "@/components/layout/page-hero";
 import { SectionHeading } from "@/components/layout/section-heading";
-import { ServiceCard } from "@/components/ui/service-card";
 import { LinkButton } from "@/components/ui/button";
+import { ServiceCard } from "@/components/ui/service-card";
 import { getServices } from "@/lib/repositories/hotel-repository";
 
 export const metadata: Metadata = {
@@ -22,6 +22,7 @@ const extras = [
 
 export default async function ServicesPage() {
   const mainServices = await getServices();
+
   return (
     <main>
       <PageHero
@@ -37,8 +38,8 @@ export default async function ServicesPage() {
           <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {mainServices.map((service) => <ServiceCard key={service.id} service={service} />)}
           </div>
-          <div className="mt-10 grid gap-4 rounded-[8px] border border-hotel-line bg-hotel-ivory p-6 shadow-hotel-soft md:grid-cols-5">
-            {extras.map((item) => <div className="flex gap-3 md:border-r md:border-hotel-line md:pr-4" key={item.label}><item.icon className="size-8 shrink-0 text-hotel-forest" /><div><h3 className="text-sm font-bold text-hotel-forest">{item.label}</h3><p className="mt-1 text-xs leading-5 text-hotel-muted">Disponible para huéspedes.</p></div></div>)}
+          <div className="mt-10 grid gap-4 rounded-[8px] border border-hotel-line bg-hotel-ivory p-6 shadow-hotel-soft md:grid-cols-2 lg:grid-cols-5">
+            {extras.map((item) => <div className="flex gap-3 lg:border-r lg:border-hotel-line lg:pr-4" key={item.label}><item.icon className="size-8 shrink-0 text-hotel-forest" /><div><h3 className="text-sm font-bold text-hotel-forest">{item.label}</h3><p className="mt-1 text-xs leading-5 text-hotel-muted">Disponible para huéspedes.</p></div></div>)}
           </div>
         </div>
       </section>

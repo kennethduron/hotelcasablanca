@@ -1,11 +1,11 @@
+import { Clock, Mail, MapPin, MessageCircle, Phone, Send } from "lucide-react";
 import type { Metadata } from "next";
-import { Clock, Mail, MapPin, Phone, Send, MessageCircle } from "lucide-react";
 
+import { createContactMessageAction } from "@/app/(public)/contacto/actions";
 import { PageHero } from "@/components/layout/page-hero";
 import { SectionHeading } from "@/components/layout/section-heading";
 import { TourismMapDynamic } from "@/components/maps/tourism-map-dynamic";
 import { Button } from "@/components/ui/button";
-import { createContactMessageAction } from "@/app/(public)/contacto/actions";
 import { siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -35,7 +35,7 @@ export default function ContactPage() {
       <section className="py-16">
         <div className="hotel-container">
           <SectionHeading eyebrow="Contacto" title="Ponte en contacto con nosotros" description="Estamos listos para atender tus consultas, reservas o cualquier solicitud especial." />
-          <div className="mt-10 grid gap-8 lg:grid-cols-[0.75fr_1fr_0.95fr]">
+          <div className="mt-10 grid gap-8 xl:grid-cols-[0.75fr_1fr_0.95fr]">
             <aside className="space-y-5">
               <h2 className="hotel-serif text-3xl font-bold text-hotel-forest">Información de contacto</h2>
               {contactItems.map((item) => <div className="flex gap-4" key={item.label}><div className="grid size-14 shrink-0 place-items-center rounded-[8px] bg-hotel-forest text-hotel-gold"><item.icon className="size-6" /></div><div><h3 className="font-bold text-hotel-forest">{item.label}</h3><p className="mt-1 text-sm leading-6 text-hotel-muted">{item.value}</p></div></div>)}
@@ -48,7 +48,7 @@ export default function ContactPage() {
                 <Input label="Teléfono" name="phone" placeholder="Tu teléfono" />
                 <Input label="Asunto" name="subject" placeholder="¿En qué podemos ayudarte?" />
               </div>
-              <label className="mt-4 block text-sm font-medium text-hotel-ink">Mensaje<textarea className="mt-2 h-36 w-full rounded-[6px] border border-hotel-line bg-white p-3 outline-none focus:border-hotel-gold" name="message" placeholder="Escribe tu mensaje aquí..." /></label>
+              <label className="mt-4 block text-sm font-medium text-hotel-ink">Mensaje<textarea className="mt-2 h-36 w-full rounded-[6px] border border-hotel-line bg-white p-3 outline-none transition focus:border-hotel-gold" name="message" placeholder="Escribe tu mensaje aquí..." /></label>
               <Button className="mt-5 w-full" type="submit" variant="forest">Enviar mensaje <Send className="size-4" /></Button>
             </form>
             <TourismMapDynamic compact />
@@ -59,4 +59,6 @@ export default function ContactPage() {
   );
 }
 
-function Input({ label, placeholder, name }: { label: string; placeholder: string; name: string }) { return <label className="text-sm font-medium text-hotel-ink">{label}<input className="mt-2 h-12 w-full rounded-[6px] border border-hotel-line bg-white px-3 outline-none focus:border-hotel-gold" name={name} placeholder={placeholder} /></label>; }
+function Input({ label, placeholder, name }: { label: string; placeholder: string; name: string }) {
+  return <label className="text-sm font-medium text-hotel-ink">{label}<input className="mt-2 h-12 w-full rounded-[6px] border border-hotel-line bg-white px-3 outline-none transition focus:border-hotel-gold" name={name} placeholder={placeholder} /></label>;
+}

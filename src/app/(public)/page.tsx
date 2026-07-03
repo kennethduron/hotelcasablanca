@@ -1,13 +1,13 @@
-import { ArrowRight, Bell, Car, ShieldCheck, Utensils, Wifi, Leaf } from "lucide-react";
+import { ArrowRight, Bell, Car, Leaf, ShieldCheck, Utensils, Wifi } from "lucide-react";
 import type { Metadata } from "next";
 
 import { PageHero } from "@/components/layout/page-hero";
 import { SectionHeading } from "@/components/layout/section-heading";
 import { TourismMapDynamic } from "@/components/maps/tourism-map-dynamic";
-import { RoomCard } from "@/components/ui/room-card";
 import { LinkButton } from "@/components/ui/button";
-import { getDestinations, getRooms } from "@/lib/repositories/hotel-repository";
+import { RoomCard } from "@/components/ui/room-card";
 import { quickBenefits } from "@/data/services";
+import { getDestinations, getRooms } from "@/lib/repositories/hotel-repository";
 
 export const metadata: Metadata = {
   title: "Inicio",
@@ -18,6 +18,7 @@ const icons = [Leaf, ShieldCheck, Wifi, Car, Utensils, Bell];
 
 export default async function HomePage() {
   const [rooms, destinations] = await Promise.all([getRooms(), getDestinations()]);
+
   return (
     <main>
       <PageHero
@@ -49,7 +50,7 @@ export default async function HomePage() {
         <div className="hotel-container grid gap-10 lg:grid-cols-[0.65fr_1.35fr] lg:items-center">
           <div>
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.24em] text-hotel-gold-700">Descubre Honduras</p>
-            <h2 className="hotel-serif text-5xl font-bold leading-tight text-hotel-forest">Explora destinos cerca de nosotros</h2>
+            <h2 className="hotel-serif text-4xl font-bold leading-tight text-hotel-forest md:text-5xl">Explora destinos cerca de nosotros</h2>
             <p className="mt-5 leading-8 text-hotel-muted">Conéctate con los principales atractivos turísticos de Honduras. Selecciona un destino y conoce la distancia y el tiempo estimado desde el hotel.</p>
             <LinkButton className="mt-7" href="/entorno" variant="forest">Explorar todos los destinos <ArrowRight className="size-4" /></LinkButton>
           </div>

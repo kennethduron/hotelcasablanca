@@ -11,12 +11,12 @@ const services = ["Restaurante", "Piscina", "Jardines", "Gimnasio", "Eventos"];
 export function Footer() {
   return (
     <footer className="hotel-dark-gradient mt-auto text-white">
-      <div className="hotel-container grid gap-10 py-12 md:grid-cols-[1.2fr_0.8fr_0.8fr_1.1fr_1fr]">
+      <div className="hotel-container grid gap-10 py-12 md:grid-cols-2 lg:grid-cols-[1.2fr_0.8fr_0.8fr_1.1fr_1fr]">
         <div>
-          <HotelLogo imageClassName="w-28" />
+          <HotelLogo className="size-24" />
           <p className="mt-4 max-w-56 text-sm leading-7 text-white/80">
             Tu refugio en El Progreso, Yoro. Naturaleza, confort y hospitalidad
-            en perfecta armonia.
+            en perfecta armonía.
           </p>
           <div className="mt-5 flex gap-3 text-hotel-gold">
             <MessageCircle className="size-5" />
@@ -24,7 +24,7 @@ export function Footer() {
             <Phone className="size-5" />
           </div>
         </div>
-        <FooterColumn title="Enlaces rapidos" items={quickLinks} />
+        <FooterColumn title="Enlaces rápidos" items={quickLinks} />
         <FooterColumn title="Servicios" items={services} />
         <div>
           <h3 className="mb-4 text-sm font-bold uppercase">Contacto</h3>
@@ -59,9 +59,9 @@ export function Footer() {
       <div className="border-t border-white/10 py-5">
         <div className="hotel-container flex flex-col gap-3 text-xs text-white/70 md:flex-row md:items-center md:justify-between">
           <p>© 2026 Hotel Casa Blanca. Todos los derechos reservados.</p>
-          <div className="flex gap-4">
-            <Link href="/terminos">Terminos y Condiciones</Link>
-            <Link href="/privacidad">Politica de Privacidad</Link>
+          <div className="flex flex-wrap gap-4">
+            <Link href="/terminos">Términos y Condiciones</Link>
+            <Link href="/privacidad">Política de Privacidad</Link>
           </div>
         </div>
       </div>

@@ -8,7 +8,7 @@ export type RoomStatus =
   | "Fuera de servicio";
 
 export type ReservationStatus =
-  | "Pendiente de revision"
+  | "Pendiente de revisión"
   | "En espera de pago"
   | "Pagada"
   | "Confirmada"
@@ -21,8 +21,8 @@ export type PaymentStatus = "Pendiente" | "Enviado" | "Pagado" | "Cancelado";
 
 export type PreferredContactMethod =
   | "WhatsApp"
-  | "Correo electronico"
-  | "Llamada telefonica";
+  | "Correo electrónico"
+  | "Llamada telefónica";
 
 export interface Room {
   id: string;
@@ -56,18 +56,28 @@ export interface Reservation {
   guestName: string;
   guestEmail: string;
   guestPhone: string;
+  guestCountry: string;
+  guestDocumentNumber: string;
+  guestDocumentType: string;
+  guestAddress?: string;
   roomId: string;
   roomName: string;
   checkIn: string;
   checkOut: string;
   adults: number;
   children: number;
+  nights: number;
+  plan: string;
+  ratePerNight: number;
+  taxes: number;
   notes?: string;
   total: number;
   status: ReservationStatus;
   paymentStatus: PaymentStatus;
   paymentLink?: string;
   preferredContactMethod: PreferredContactMethod;
+  termsAccepted: boolean;
+  dataProcessingAccepted: boolean;
   createdAt: string;
   updatedAt: string;
   approvedBy?: string;

@@ -1,10 +1,10 @@
-import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
+import type { Metadata } from "next";
 
 import { PageHero } from "@/components/layout/page-hero";
 import { SectionHeading } from "@/components/layout/section-heading";
-import { RoomCard } from "@/components/ui/room-card";
 import { LinkButton } from "@/components/ui/button";
+import { RoomCard } from "@/components/ui/room-card";
 import { getRooms } from "@/lib/repositories/hotel-repository";
 
 export const metadata: Metadata = {
@@ -16,6 +16,7 @@ const filters = ["Todas", "Ejecutivas", "Dobles", "Suites", "Familiares"];
 
 export default async function RoomsPage() {
   const rooms = await getRooms();
+
   return (
     <main>
       <PageHero
@@ -30,7 +31,7 @@ export default async function RoomsPage() {
         <div className="hotel-container">
           <SectionHeading eyebrow="Nuestras habitaciones" title="Elija su espacio ideal" />
           <div className="my-9 flex flex-wrap justify-center gap-2">
-            {filters.map((filter, index) => <button className={`h-10 rounded-[999px] px-6 text-xs font-bold uppercase ${index === 0 ? "bg-hotel-forest text-white" : "border border-hotel-line bg-white text-hotel-forest"}`} key={filter} type="button">{filter}</button>)}
+            {filters.map((filter, index) => <button className={`min-h-10 rounded-[999px] px-6 py-2 text-xs font-bold uppercase transition ${index === 0 ? "bg-hotel-forest text-white" : "border border-hotel-line bg-white text-hotel-forest hover:border-hotel-gold"}`} key={filter} type="button">{filter}</button>)}
           </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {rooms.map((room) => <RoomCard key={room.id} room={room} />)}

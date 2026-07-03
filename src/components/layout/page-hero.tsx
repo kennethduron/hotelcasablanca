@@ -1,6 +1,6 @@
+import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
 
 import { BookingBar } from "@/components/layout/booking-bar";
 import { WeatherTimeCard } from "@/components/layout/weather-time-card";
@@ -45,10 +45,10 @@ export function PageHero({
             <p className="mb-5 text-xs font-bold uppercase tracking-[0.32em] text-hotel-gold">
               {eyebrow}
             </p>
-            <h1 className="hotel-serif text-5xl font-bold leading-[0.94] md:text-7xl">
+            <h1 className="hotel-serif text-4xl font-bold leading-[0.98] sm:text-5xl md:text-7xl">
               {title}
             </h1>
-            <p className="mt-6 max-w-xl text-lg leading-8 text-white/90">{description}</p>
+            <p className="mt-6 max-w-xl text-base leading-8 text-white/90 md:text-lg">{description}</p>
             {active ? (
               <div className="mt-6 flex items-center gap-2 text-sm text-white/85">
                 <Link href="/">Inicio</Link>
@@ -59,7 +59,11 @@ export function PageHero({
             {showActions ? (
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <LinkButton href="/reservar" variant="gold">Reservar ahora</LinkButton>
-                <LinkButton href="/habitaciones" variant="outline" className="border-white text-white hover:border-hotel-gold hover:bg-hotel-gold hover:text-hotel-forest">
+                <LinkButton
+                  className="border-white text-white hover:border-hotel-gold hover:bg-hotel-gold hover:text-hotel-forest"
+                  href="/habitaciones"
+                  variant="outline"
+                >
                   Conoce más
                 </LinkButton>
               </div>
