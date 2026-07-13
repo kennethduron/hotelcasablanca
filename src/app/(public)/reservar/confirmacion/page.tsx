@@ -2,11 +2,14 @@ import { CheckCircle2 } from "lucide-react";
 import type { Metadata } from "next";
 
 import { LinkButton } from "@/components/ui/button";
+import { createPageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "Solicitud recibida",
   description: "Confirmación de recepción de solicitud de reserva.",
-};
+  path: "/reservar/confirmacion",
+  noIndex: true,
+});
 
 export default function ReservationConfirmationPage() {
   return (

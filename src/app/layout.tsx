@@ -1,15 +1,12 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Geist, Geist_Mono } from "next/font/google";
+import { Cormorant_Garamond, Geist } from "next/font/google";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
 
+import { siteUrl } from "@/lib/metadata";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
@@ -20,13 +17,14 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://hotelcasablanca.hn"),
+  metadataBase: new URL(siteUrl),
   title: {
     default: "Hotel Casa Blanca | Hotel en El Progreso, Yoro",
     template: "%s | Hotel Casa Blanca",
   },
   description:
     "Hotel Casa Blanca en El Progreso, Yoro, Honduras. Habitaciones, piscina, eventos, restaurante y entorno natural para una estancia premium.",
+  alternates: { canonical: "/" },
   keywords: [
     "Hotel en El Progreso Yoro",
     "Hotel Casa Blanca",
@@ -44,8 +42,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/brand/Casa_Blanca_Hotel_Logo.png",
-        width: 1200,
-        height: 630,
+        width: 897,
+        height: 847,
         alt: "Hotel Casa Blanca",
       },
     ],
@@ -66,7 +64,7 @@ export default function RootLayout({
   return (
     <html
       lang="es-HN"
-      className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${cormorant.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col hotel-surface">{children}</body>
     </html>

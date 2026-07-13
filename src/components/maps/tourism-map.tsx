@@ -3,11 +3,12 @@
 import L from "leaflet";
 import { ArrowRight, MapPin } from "lucide-react";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MapContainer, Marker, Polyline, Popup, TileLayer } from "react-leaflet";
 
 import { destinations as localDestinations } from "@/data/destinations";
 import { siteConfig } from "@/lib/site";
+import { getDrivingRoute, type RouteResult } from "@/lib/routing-service";
 import type { Destination } from "@/types/hotel";
 
 const hotelPosition: [number, number] = [
@@ -46,11 +47,25 @@ export function TourismMap({
   destinations?: Destination[];
 }) {
   const [selectedId, setSelectedId] = useState(destinations[0]?.id ?? "");
+  const [route, setRoute] = useState<RouteResult | null>(null);
+  const [routeError, setRouteError] = useState("");
+  const [routeLoading, setRouteLoading] = useState(false);
   const selected =
     destinations.find((destination) => destination.id === selectedId) ?? destinations[0];
   const hotelIcon = useMemo(() => createHotelIcon(), []);
   const destinationIcon = useMemo(() => createDestinationIcon(), []);
   const selectedIcon = useMemo(() => createDestinationIcon(true), []);
+
+  useEffect(() => {
+    if (!selected) return;
+    let active = true;
+    queueMicrotask(() => { if (active) { setRoute(null); setRouteError(""); setRouteLoading(true); } });
+    getDrivingRoute(hotelPosition, [selected.coordinates.lat, selected.coordinates.lng])
+      .then((result) => { if (active) setRoute(result); })
+      .catch(() => { if (active) setRouteError("No fue posible cargar la ruta por carretera. Puede abrirla en Google Maps."); })
+      .finally(() => { if (active) setRouteLoading(false); });
+    return () => { active = false; };
+  }, [selected]);
 
   if (!selected) {
     return (
@@ -58,18 +73,14 @@ export function TourismMap({
         No hay destinos disponibles.
       </div>
     );
-  }
+  }  const routeUrl = `https://www.google.com/maps/dir/?api=1&origin=${hotelPosition.join(",")}&destination=${selected.coordinates.lat},${selected.coordinates.lng}`;
 
-  const route: [number, number][] = [
-    hotelPosition,
-    [selected.coordinates.lat, selected.coordinates.lng],
-  ];
 
   return (
     <div className={`grid gap-6 ${compact ? "" : "lg:grid-cols-[0.9fr_1.5fr]"}`}>
       {!compact ? (
         <div className="min-w-0 space-y-3">
-          {destinations.slice(0, 5).map((destination) => (
+          {destinations.map((destination) => (
             <button
               className={`flex w-full items-center gap-3 rounded-[8px] border p-3 text-left transition ${
                 selectedId === destination.id
@@ -123,7 +134,7 @@ export function TourismMap({
                 <Popup>{destination.name}</Popup>
               </Marker>
             ))}
-            <Polyline color="#002f22" dashArray="7 8" opacity={0.9} positions={route} weight={4} />
+            {route ? <Polyline color="#002f22" opacity={0.9} positions={route.coordinates} weight={5} /> : null}
           </MapContainer>
           <div className="relative z-20 border-t border-hotel-line bg-hotel-ivory p-4 shadow-hotel-card md:absolute md:bottom-4 md:right-4 md:w-72 md:rounded-[8px] md:border">
             <div className="relative mb-3 h-28 overflow-hidden rounded-[6px]">
@@ -137,21 +148,21 @@ export function TourismMap({
             </div>
             <h3 className="hotel-serif text-2xl font-bold text-hotel-forest">{selected.name}</h3>
             <p className="text-xs text-hotel-muted">{selected.location}</p>
-            <div className="my-3 grid grid-cols-2 gap-2 border-y border-hotel-line py-3 text-xs">
+            {routeLoading ? <p className="my-2 text-xs text-hotel-muted">Calculando ruta por carretera…</p> : null}{routeError ? <p className="my-2 text-xs text-red-700">{routeError}</p> : null}<div className="my-3 grid grid-cols-2 gap-2 border-y border-hotel-line py-3 text-xs">
               <span>
                 Distancia
                 <br />
-                <strong>{selected.distance}</strong>
+                <strong>{route ? `${route.distanceKm.toFixed(1)} km` : selected.distance}</strong>
               </span>
               <span>
                 Tiempo estimado
                 <br />
-                <strong>{selected.duration}</strong>
+                <strong>{route ? `${Math.round(route.durationMinutes)} min` : selected.duration}</strong>
               </span>
             </div>
-            <button className="flex min-h-11 w-full items-center justify-center gap-2 rounded-[6px] bg-hotel-forest px-4 text-xs font-bold uppercase text-white transition hover:bg-hotel-forest-800" type="button">
+            <a className="flex min-h-11 w-full items-center justify-center gap-2 rounded-[6px] bg-hotel-forest px-4 text-xs font-bold uppercase text-white transition hover:bg-hotel-forest-800" href={routeUrl} rel="noreferrer" target="_blank">
               Ver ruta <ArrowRight className="size-4" />
-            </button>
+            </a>
           </div>
         </div>
       </div>

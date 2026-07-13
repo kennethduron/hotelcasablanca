@@ -7,7 +7,7 @@
   --hotel-forest-900: #001f16;
   --hotel-forest-800: #063a2a;
   --hotel-gold: #d6a85f;
-  --hotel-gold-700: #b98737;
+  --hotel-gold-700: #93631f;
   --hotel-cream: #fbf7ef;
   --hotel-ivory: #fffdf7;
   --hotel-sage: #dfe9d6;
@@ -31,7 +31,6 @@
   --color-hotel-muted: var(--hotel-muted);
   --color-hotel-line: var(--hotel-line);
   --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
   --font-serif: "Cormorant Garamond", Georgia, serif;
   --shadow-hotel-soft: 0 18px 45px rgb(20 30 24 / 0.1);
   --shadow-hotel-card: 0 12px 30px rgb(10 35 25 / 0.12);
@@ -101,4 +100,20 @@ a {
 .leaflet-control-container {
   position: relative;
   z-index: 20;
+}
+
+:focus-visible {
+  outline: 3px solid var(--hotel-gold);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

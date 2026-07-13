@@ -5,8 +5,16 @@ import { HotelLogo } from "@/components/brand/hotel-logo";
 import { LinkButton } from "@/components/ui/button";
 import { siteConfig } from "@/lib/site";
 
-const quickLinks = ["Inicio", "Habitaciones", "Servicios", "Entorno", "Contacto"];
-const services = ["Restaurante", "Piscina", "Jardines", "Gimnasio", "Eventos"];
+const quickLinks = [
+  { label: "Inicio", href: "/" },
+  { label: "Habitaciones", href: "/habitaciones" },
+  { label: "Servicios", href: "/servicios" },
+  { label: "Entorno", href: "/entorno" },
+  { label: "Contacto", href: "/contacto" },
+];
+const services = ["Restaurante", "Piscina", "Jardines", "Gimnasio", "Eventos"].map(
+  (label) => ({ label, href: "/servicios" }),
+);
 
 export function Footer() {
   return (
@@ -60,8 +68,8 @@ export function Footer() {
         <div className="hotel-container flex flex-col gap-3 text-xs text-white/70 md:flex-row md:items-center md:justify-between">
           <p>© 2026 Hotel Casa Blanca. Todos los derechos reservados.</p>
           <div className="flex flex-wrap gap-4">
-            <Link href="/terminos">Términos y Condiciones</Link>
-            <Link href="/privacidad">Política de Privacidad</Link>
+            <span>Términos y Condiciones</span>
+            <span>Política de Privacidad</span>
           </div>
         </div>
       </div>
@@ -69,14 +77,20 @@ export function Footer() {
   );
 }
 
-function FooterColumn({ title, items }: { title: string; items: string[] }) {
+function FooterColumn({
+  title,
+  items,
+}: {
+  title: string;
+  items: Array<{ label: string; href: string }>;
+}) {
   return (
     <div>
       <h3 className="mb-4 text-sm font-bold uppercase">{title}</h3>
       <ul className="space-y-2 text-sm text-white/80">
         {items.map((item) => (
-          <li key={item}>
-            <Link href="#">{item}</Link>
+          <li key={item.label}>
+            <Link href={item.href}>{item.label}</Link>
           </li>
         ))}
       </ul>

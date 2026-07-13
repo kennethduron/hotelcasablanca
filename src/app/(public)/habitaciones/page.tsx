@@ -6,11 +6,13 @@ import { SectionHeading } from "@/components/layout/section-heading";
 import { LinkButton } from "@/components/ui/button";
 import { RoomCard } from "@/components/ui/room-card";
 import { getRooms } from "@/lib/repositories/hotel-repository";
+import { createPageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "Habitaciones",
   description: "Habitaciones ejecutivas, dobles y suites en Hotel Casa Blanca.",
-};
+  path: "/habitaciones",
+});
 
 const filters = ["Todas", "Ejecutivas", "Dobles", "Suites", "Familiares"];
 
@@ -23,7 +25,7 @@ export default async function RoomsPage() {
         eyebrow="Habitaciones & Suites"
         title="Descanso para cada ocasión"
         description="Espacios diseñados para su confort, rodeados de naturaleza y equipados con todo lo que necesita."
-        image="https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=2200&q=90"
+        images={["https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=2200&q=88"]}
         active="Habitaciones"
         showWeather={false}
       />
@@ -31,13 +33,13 @@ export default async function RoomsPage() {
         <div className="hotel-container">
           <SectionHeading eyebrow="Nuestras habitaciones" title="Elija su espacio ideal" />
           <div className="my-9 flex flex-wrap justify-center gap-2">
-            {filters.map((filter, index) => <button className={`min-h-10 rounded-[999px] px-6 py-2 text-xs font-bold uppercase transition ${index === 0 ? "bg-hotel-forest text-white" : "border border-hotel-line bg-white text-hotel-forest hover:border-hotel-gold"}`} key={filter} type="button">{filter}</button>)}
+            {filters.map((filter, index) => <span className={`rounded-[999px] px-6 py-2 text-xs font-bold uppercase ${index === 0 ? "bg-hotel-forest text-white" : "border border-hotel-line bg-white text-hotel-forest"}`} key={filter}>{filter}</span>)}
           </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {rooms.map((room) => <RoomCard key={room.id} room={room} />)}
+            {rooms.map((room) => <div className="scroll-mt-28" id={room.id} key={room.id}><RoomCard room={room} /></div>)}
           </div>
           <div className="mt-10 flex justify-center">
-            <LinkButton href="/reservar" variant="outline">Ver todas las habitaciones <ArrowRight className="size-4" /></LinkButton>
+            <LinkButton href="#habitacion-ejecutiva" variant="outline">Ver todas las habitaciones <ArrowRight className="size-4" /></LinkButton>
           </div>
         </div>
       </section>

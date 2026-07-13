@@ -8,11 +8,13 @@ import { LinkButton } from "@/components/ui/button";
 import { RoomCard } from "@/components/ui/room-card";
 import { quickBenefits } from "@/data/services";
 import { getDestinations, getRooms } from "@/lib/repositories/hotel-repository";
+import { createPageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "Inicio",
   description: "Hotel Casa Blanca, su oasis de descanso en El Progreso, Yoro.",
-};
+  path: "/",
+});
 
 const icons = [Leaf, ShieldCheck, Wifi, Car, Utensils, Bell];
 
@@ -25,7 +27,7 @@ export default async function HomePage() {
         eyebrow="Exclusividad & Naturaleza"
         title="Su oasis de descanso en El Progreso, Yoro"
         description="Naturaleza, confort y hospitalidad en perfecta armonía."
-        image="https://images.unsplash.com/photo-1601919051950-bb9f3ffb3fee?auto=format&fit=crop&w=2200&q=90"
+        images={["https://images.unsplash.com/photo-1601919051950-bb9f3ffb3fee?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1496417263034-38ec4f0b665a?auto=format&fit=crop&w=2200&q=88"]}
         showActions
       />
 

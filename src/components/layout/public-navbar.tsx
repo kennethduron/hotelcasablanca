@@ -1,138 +1,19 @@
 "use client";
-
 import { CalendarDays, ChevronDown, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
-
+import { useEffect, useRef, useState } from "react";
 import { HotelLogo } from "@/components/brand/hotel-logo";
 import { LinkButton } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
 const navItems = [
-  { href: "/", label: "Inicio" },
-  {
-    href: "/habitaciones",
-    label: "Habitaciones",
-    children: [
-      "Habitación Ejecutiva",
-      "Suite Premium",
-      "Habitación Doble",
-      "Suite Familiar",
-    ],
-  },
-  {
-    href: "/servicios",
-    label: "Servicios",
-    children: [
-      "Restaurante",
-      "Eventos y Negocios",
-      "Piscina",
-      "Jardines Naturales",
-      "Gimnasio",
-      "Parqueo Privado",
-    ],
-  },
-  {
-    href: "/entorno",
-    label: "Entorno",
-    children: ["Turismo", "Mapa Interactivo", "Atracciones Cercanas", "Cómo Llegar"],
-  },
-  { href: "/contacto", label: "Contacto" },
+ { href:"/", label:"Inicio" },
+ { href:"/habitaciones", label:"Habitaciones", children:[{label:"Habitación Ejecutiva",href:"/habitaciones#habitacion-ejecutiva"},{label:"Suite Premium",href:"/habitaciones#suite-premium"},{label:"Habitación Doble",href:"/habitaciones#habitacion-doble"},{label:"Suite Familiar",href:"/habitaciones#suite-familiar"}]},
+ { href:"/servicios", label:"Servicios", children:[{label:"Restaurante",href:"/servicios#restaurante"},{label:"Eventos y Negocios",href:"/servicios#eventos"},{label:"Piscina",href:"/servicios#piscina"},{label:"Jardines Naturales",href:"/servicios#jardines"},{label:"Parqueo Privado",href:"/servicios#parqueo"},{label:"Gimnasio",href:"/servicios#gimnasio"}]},
+ { href:"/entorno", label:"Entorno", children:[{label:"Turismo",href:"/entorno#turismo"},{label:"Mapa interactivo",href:"/entorno#mapa"},{label:"Atracciones cercanas",href:"/entorno#atracciones"},{label:"Cómo llegar",href:"/contacto#mapa"}]},
+ { href:"/contacto", label:"Contacto" },
 ];
-
-export function PublicNavbar() {
-  const pathname = usePathname();
-  const [open, setOpen] = useState(false);
-
-  return (
-    <header className="sticky top-0 z-[1000] bg-hotel-forest-900/98 text-white shadow-lg shadow-black/10 backdrop-blur">
-      <nav className="hotel-container flex min-h-20 items-center justify-between gap-4 py-2">
-        <HotelLogo className="size-18 md:size-20" priority />
-        <div className="hidden min-w-0 items-center justify-center gap-5 xl:gap-8 lg:flex">
-          {navItems.map((item) => {
-            const active = pathname === item.href;
-
-            return (
-              <div className="group relative" key={item.href}>
-                <Link
-                  className={cn(
-                    "flex min-h-16 items-center gap-1 border-b-2 border-transparent text-sm font-bold uppercase transition hover:text-hotel-gold",
-                    active && "border-hotel-gold text-hotel-gold",
-                  )}
-                  href={item.href}
-                >
-                  {item.label}
-                  {item.children ? <ChevronDown className="size-4" /> : null}
-                </Link>
-                {item.children ? (
-                  <div className="invisible absolute left-1/2 top-full min-w-64 -translate-x-1/2 translate-y-2 rounded-[8px] border border-white/10 bg-hotel-forest p-2 opacity-0 shadow-hotel-card transition group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
-                    {item.children.map((child) => (
-                      <Link
-                        className="block rounded-[6px] px-4 py-3 text-sm text-white/85 hover:bg-white/10 hover:text-hotel-gold"
-                        href={item.href}
-                        key={child}
-                      >
-                        {child}
-                      </Link>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            );
-          })}
-        </div>
-        <div className="hidden shrink-0 lg:block">
-          <LinkButton href="/reservar" variant="gold">
-            <CalendarDays className="size-4" />
-            Reservar ahora
-          </LinkButton>
-        </div>
-        <button
-          aria-label={open ? "Cerrar menú" : "Abrir menú"}
-          className="grid size-11 place-items-center rounded-[6px] border border-white/25 text-white transition hover:bg-white/10 lg:hidden"
-          onClick={() => setOpen((value) => !value)}
-          type="button"
-        >
-          {open ? <X className="size-5" /> : <Menu className="size-5" />}
-        </button>
-      </nav>
-      {open ? (
-        <div className="border-t border-white/10 bg-hotel-forest lg:hidden">
-          <div className="hotel-container max-h-[calc(100vh-5rem)] overflow-y-auto py-4">
-            {navItems.map((item) => (
-              <div key={item.href}>
-                <Link
-                  className="flex items-center justify-between rounded-[6px] px-3 py-3 text-sm font-bold uppercase text-white/95 hover:bg-white/10"
-                  href={item.href}
-                  onClick={() => setOpen(false)}
-                >
-                  {item.label}
-                  {item.children ? <ChevronDown className="size-4" /> : null}
-                </Link>
-                {item.children ? (
-                  <div className="mb-2 grid gap-1 pl-4">
-                    {item.children.map((child) => (
-                      <Link
-                        className="rounded-[6px] px-3 py-2 text-sm text-white/75 hover:bg-white/10 hover:text-hotel-gold"
-                        href={item.href}
-                        key={child}
-                        onClick={() => setOpen(false)}
-                      >
-                        {child}
-                      </Link>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            ))}
-            <LinkButton className="mt-3 w-full" href="/reservar" variant="gold">
-              <CalendarDays className="size-4" />
-              Reservar ahora
-            </LinkButton>
-          </div>
-        </div>
-      ) : null}
-    </header>
-  );
-}
+export function PublicNavbar(){ const pathname=usePathname(); const [mobile,setMobile]=useState(false); const [dropdown,setDropdown]=useState<string|null>(null); const root=useRef<HTMLElement>(null);
+ useEffect(()=>{ const click=(e:MouseEvent)=>{if(!root.current?.contains(e.target as Node))setDropdown(null)}; const key=(e:KeyboardEvent)=>{if(e.key==="Escape"){setDropdown(null);setMobile(false)}}; document.addEventListener("mousedown",click);document.addEventListener("keydown",key);return()=>{document.removeEventListener("mousedown",click);document.removeEventListener("keydown",key)}},[]);
+ return <header className="sticky top-0 z-[1000] bg-hotel-forest-900/98 text-white shadow-lg backdrop-blur" ref={root}><nav aria-label="Navegación principal" className="hotel-container flex min-h-20 items-center justify-between gap-4 py-2"><HotelLogo className="size-16 md:size-18" priority/><div className="hidden items-center gap-5 lg:flex xl:gap-8">{navItems.map(item=><div className="relative" key={item.href}>{item.children?<button aria-expanded={dropdown===item.label} className={cn("flex min-h-16 items-center gap-1 border-b-2 border-transparent text-sm font-bold uppercase hover:text-hotel-gold",pathname===item.href&&"border-hotel-gold text-hotel-gold")} onClick={()=>setDropdown(dropdown===item.label?null:item.label)} type="button">{item.label}<ChevronDown className="size-4"/></button>:<Link className={cn("flex min-h-16 items-center border-b-2 border-transparent text-sm font-bold uppercase hover:text-hotel-gold",pathname===item.href&&"border-hotel-gold text-hotel-gold")} href={item.href}>{item.label}</Link>}{item.children&&dropdown===item.label?<div className="absolute left-1/2 top-full z-[1100] min-w-64 -translate-x-1/2 rounded-lg border border-white/10 bg-hotel-forest p-2 shadow-hotel-card">{item.children.map(child=><Link className="block rounded px-4 py-3 text-sm text-white hover:bg-white/10 hover:text-hotel-gold" href={child.href} key={child.href} onClick={()=>setDropdown(null)}>{child.label}</Link>)}</div>:null}</div>)}</div><div className="hidden lg:block"><LinkButton href="/reservar" variant="gold"><CalendarDays className="size-4"/>Reservar ahora</LinkButton></div><button aria-controls="public-mobile-menu" aria-expanded={mobile} aria-label={mobile?"Cerrar menú":"Abrir menú"} className="grid size-11 place-items-center rounded border border-white/25 lg:hidden" onClick={()=>setMobile(!mobile)} type="button">{mobile?<X/>:<Menu/>}</button></nav>
+ {mobile?<div className="border-t border-white/10 bg-hotel-forest lg:hidden" id="public-mobile-menu"><div className="hotel-container max-h-[calc(100vh-5rem)] overflow-y-auto py-4">{navItems.map(item=>item.children?<details key={item.href}><summary className="flex cursor-pointer list-none items-center justify-between rounded px-3 py-3 text-sm font-bold uppercase">{item.label}<ChevronDown className="size-4"/></summary><div className="mb-2 grid gap-1 pl-4">{item.children.map(child=><Link className="rounded px-3 py-2 text-sm text-white/85 hover:bg-white/10" href={child.href} key={child.href} onClick={()=>setMobile(false)}>{child.label}</Link>)}</div></details>:<Link className="block rounded px-3 py-3 text-sm font-bold uppercase" href={item.href} key={item.href} onClick={()=>setMobile(false)}>{item.label}</Link>)}<LinkButton className="mt-3 w-full" href="/reservar" variant="gold">Reservar ahora</LinkButton></div></div>:null}</header> }

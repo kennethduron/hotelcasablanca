@@ -2,9 +2,9 @@
 
 import { CalendarDays, Check, MessageCircle, ShieldCheck, UserRound, type LucideIcon } from "lucide-react";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 
-import { createReservationAction } from "@/app/(public)/reservar/actions";
+import { checkAvailabilityAction, createReservationAction } from "@/app/(public)/reservar/actions";
 import { Button } from "@/components/ui/button";
 import type { PreferredContactMethod, Room } from "@/types/hotel";
 
@@ -13,6 +13,7 @@ const contactMethods: PreferredContactMethod[] = ["WhatsApp", "Correo electróni
 
 interface ReservationWizardProps {
   rooms: Room[];
+  initialRoomId?: string;
 }
 
 interface ReservationState {
@@ -33,8 +34,8 @@ interface ReservationState {
 }
 
 const defaultState: ReservationState = {
-  checkIn: "2026-05-24",
-  checkOut: "2026-05-26",
+  checkIn: "",
+  checkOut: "",
   roomId: "suite-premium",
   adults: 2,
   children: 0,
@@ -49,9 +50,11 @@ const defaultState: ReservationState = {
   preferredContactMethod: "WhatsApp",
 };
 
-export function ReservationWizard({ rooms }: ReservationWizardProps) {
+export function ReservationWizard({ rooms, initialRoomId }: ReservationWizardProps) {
   const [step, setStep] = useState(0);
-  const [reservation, setReservation] = useState(defaultState);
+  const [reservation, setReservation] = useState(() => ({ ...defaultState, roomId: initialRoomId ?? defaultState.roomId }));
+  const [availability, setAvailability] = useState<Awaited<ReturnType<typeof checkAvailabilityAction>> | null>(null);
+  const [isChecking, startChecking] = useTransition();
   const selectedRoom = rooms.find((room) => room.id === reservation.roomId) ?? rooms[0];
   const nights = getNights(reservation.checkIn, reservation.checkOut);
   const subtotal = selectedRoom ? selectedRoom.price * nights : 0;
@@ -61,6 +64,11 @@ export function ReservationWizard({ rooms }: ReservationWizardProps) {
 
   function updateReservation<K extends keyof ReservationState>(key: K, value: ReservationState[K]) {
     setReservation((current) => ({ ...current, [key]: value }));
+    if (["checkIn", "checkOut", "adults", "children", "roomId"].includes(key)) setAvailability(null);
+  }
+
+  function verifyAvailability() {
+    startChecking(async () => setAvailability(await checkAvailabilityAction({ roomId: reservation.roomId, checkIn: reservation.checkIn, checkOut: reservation.checkOut, adults: reservation.adults, children: reservation.children })));
   }
 
   if (!selectedRoom) {
@@ -99,7 +107,7 @@ export function ReservationWizard({ rooms }: ReservationWizardProps) {
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_400px]">
         <div className="min-w-0 space-y-5">
-          {step === 0 ? <DatesStep reservation={reservation} updateReservation={updateReservation} /> : null}
+          {step === 0 ? <DatesStep reservation={reservation} updateReservation={updateReservation} availability={availability} isChecking={isChecking} onVerify={verifyAvailability} /> : null}
           {step === 1 ? <RoomsStep rooms={rooms} selectedRoomId={reservation.roomId} updateReservation={updateReservation} /> : null}
           {step === 2 ? <GuestStep reservation={reservation} updateReservation={updateReservation} /> : null}
           {step === 3 ? <ConfirmStep reservation={reservation} updateReservation={updateReservation} /> : null}
@@ -115,7 +123,7 @@ export function ReservationWizard({ rooms }: ReservationWizardProps) {
               {step === steps.length - 1 ? (
                 <Button type="submit" variant="gold">Enviar solicitud</Button>
               ) : (
-                <Button onClick={() => setStep((value) => Math.min(steps.length - 1, value + 1))} type="button" variant="gold">
+                <Button disabled={step === 0 && (!availability?.available || isChecking)} onClick={() => setStep((value) => Math.min(steps.length - 1, value + 1))} type="button" variant="gold">
                   Continuar
                 </Button>
               )}
@@ -138,15 +146,26 @@ function HiddenFields({ reservation }: { reservation: ReservationState }) {
   );
 }
 
-function DatesStep({ reservation, updateReservation }: StepProps) {
+function DatesStep({ reservation, updateReservation, availability, isChecking, onVerify }: StepProps & { availability: Awaited<ReturnType<typeof checkAvailabilityAction>> | null; isChecking: boolean; onVerify: () => void }) {
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Tegucigalpa" });
   return (
-    <Panel title="Selecciona tus fechas" icon={CalendarDays}>
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Field label="Check-in" type="date" value={reservation.checkIn} onChange={(value) => updateReservation("checkIn", value)} />
-        <Field label="Check-out" type="date" value={reservation.checkOut} onChange={(value) => updateReservation("checkOut", value)} />
-        <NumberField label="Adultos" min={1} value={reservation.adults} onChange={(value) => updateReservation("adults", value)} />
-        <NumberField label="Niños" min={0} value={reservation.children} onChange={(value) => updateReservation("children", value)} />
+    <Panel title="Fechas seleccionadas" icon={CalendarDays}>
+      <div className="rounded-[8px] bg-hotel-forest p-5 text-white">
+        <p className="mb-4 text-sm text-white/80">Seleccione la fecha de entrada y luego la fecha de salida.</p>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <Field label="Check-in" min={today} type="date" value={reservation.checkIn} onChange={(value) => updateReservation("checkIn", value)} />
+          <Field label="Check-out" min={reservation.checkIn || today} type="date" value={reservation.checkOut} onChange={(value) => updateReservation("checkOut", value)} />
+          <NumberField label="Adultos" min={1} value={reservation.adults} onChange={(value) => updateReservation("adults", value)} />
+          <NumberField label="Niños" min={0} value={reservation.children} onChange={(value) => updateReservation("children", value)} />
+        </div>
+        <Button className="mt-5" disabled={isChecking || !reservation.checkIn || !reservation.checkOut} onClick={onVerify} type="button" variant="gold">
+          {isChecking ? "Verificando…" : "Verificar disponibilidad"}
+        </Button>
       </div>
+      {availability ? <div aria-live="polite" className={`mt-4 rounded-[8px] border p-4 text-sm font-semibold ${availability.available ? "border-emerald-600 bg-emerald-50 text-emerald-800" : "border-red-600 bg-red-50 text-red-800"}`}>
+        {availability.available ? "La habitación está disponible para las fechas seleccionadas." : availability.reason ?? "Esta habitación no está disponible para las fechas seleccionadas."}
+        {!availability.available && availability.alternatives.length ? <div className="mt-3"><p>Habitaciones alternativas disponibles:</p><div className="mt-2 flex flex-wrap gap-2">{availability.alternatives.map((room) => <button className="rounded bg-white px-3 py-2 text-hotel-forest underline" key={room.id} onClick={() => updateReservation("roomId", room.id)} type="button">{room.name}</button>)}</div></div> : null}
+      </div> : null}
     </Panel>
   );
 }
@@ -251,8 +270,8 @@ function Panel({ title, icon: Icon, children }: { title: string; icon: LucideIco
   return <div className="rounded-[8px] border border-hotel-line bg-hotel-ivory p-5 shadow-hotel-soft md:p-6"><h2 className="hotel-serif mb-5 flex items-center gap-3 text-2xl font-bold text-hotel-forest md:text-3xl"><Icon className="size-7 shrink-0" />{title}</h2>{children}</div>;
 }
 
-function Field({ label, value, onChange, placeholder, type = "text", className = "" }: { label: string; value: string; onChange: (value: string) => void; placeholder?: string; type?: string; className?: string }) {
-  return <label className={`block text-sm font-medium text-hotel-ink ${className}`}>{label}<input className="mt-2 h-12 w-full rounded-[6px] border border-hotel-line bg-white px-3 text-sm outline-none transition focus:border-hotel-gold" onChange={(event) => onChange(event.target.value)} placeholder={placeholder} type={type} value={value} /></label>;
+function Field({ label, value, onChange, placeholder, type = "text", className = "", min }: { label: string; value: string; onChange: (value: string) => void; placeholder?: string; type?: string; className?: string; min?: string }) {
+  return <label className={`block text-sm font-medium text-hotel-ink ${className}`}>{label}<input className="mt-2 h-12 w-full rounded-[6px] border border-hotel-line bg-white px-3 text-sm outline-none transition focus:border-hotel-gold" onChange={(event) => onChange(event.target.value)} min={min} placeholder={placeholder} type={type} value={value} /></label>;
 }
 
 function NumberField({ label, min, value, onChange }: { label: string; min: number; value: number; onChange: (value: number) => void }) {
@@ -270,13 +289,16 @@ interface StepProps {
 }
 
 function getNights(checkIn: string, checkOut: string) {
+  if (!checkIn || !checkOut) return 0;
   const start = new Date(`${checkIn}T00:00:00`);
   const end = new Date(`${checkOut}T00:00:00`);
   const diff = end.getTime() - start.getTime();
-  return Math.max(1, Math.round(diff / 86_400_000));
+  if (!Number.isFinite(diff) || diff <= 0) return 0;
+  return Math.round(diff / 86_400_000);
 }
 
 function formatDate(value: string) {
+  if (!value) return "Seleccionar";
   return new Date(`${value}T00:00:00`).toLocaleDateString("es-HN", {
     day: "numeric",
     month: "long",

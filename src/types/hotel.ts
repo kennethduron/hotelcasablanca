@@ -35,6 +35,12 @@ export interface Room {
   amenities: string[];
   image: string;
   status: RoomStatus;
+  slug?: string;
+  roomType?: string;
+  totalUnits?: number;
+  capacityAdults?: number;
+  capacityChildren?: number;
+  active?: boolean;
 }
 
 export interface Destination {
@@ -49,6 +55,7 @@ export interface Destination {
     lat: number;
     lng: number;
   };
+  marineTransferNote?: string;
 }
 
 export interface Reservation {

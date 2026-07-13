@@ -3,17 +3,17 @@ import { BedDouble, CalendarDays, UserRound } from "lucide-react";
 import { LinkButton } from "@/components/ui/button";
 
 const bookingItems = [
-  { label: "Check-in", value: "24 Mayo 2026", icon: CalendarDays },
-  { label: "Check-out", value: "25 Mayo 2026", icon: CalendarDays },
+  { label: "Check-in", value: "Seleccionar fecha", icon: CalendarDays },
+  { label: "Check-out", value: "Seleccionar fecha", icon: CalendarDays },
   { label: "Huéspedes", value: "2 Adultos, 0 Niños", icon: UserRound },
   { label: "Habitación", value: "Todas las habitaciones", icon: BedDouble },
 ];
 
 export function BookingBar() {
   return (
-    <form className="hotel-container relative z-20 -mt-10 grid gap-0 overflow-hidden rounded-[8px] border border-hotel-line bg-hotel-ivory p-3 shadow-hotel-card md:grid-cols-2 lg:grid-cols-[repeat(4,1fr)_auto]">
+    <div className="hotel-container relative z-20 -mt-10 grid gap-0 overflow-hidden rounded-[8px] border border-hotel-line bg-hotel-ivory p-3 shadow-hotel-card md:grid-cols-2 lg:grid-cols-[repeat(4,1fr)_auto]">
       {bookingItems.map((item) => (
-        <label
+        <div
           className="flex min-h-20 items-center gap-4 border-b border-hotel-line px-4 py-4 md:odd:border-r lg:border-b-0 lg:border-r"
           key={item.label}
         >
@@ -24,11 +24,11 @@ export function BookingBar() {
             </span>
             <span className="block truncate text-sm font-medium text-hotel-ink">{item.value}</span>
           </span>
-        </label>
+        </div>
       ))}
       <LinkButton className="m-1 min-h-14 whitespace-nowrap" href="/reservar" variant="forest">
         Buscar disponibilidad
       </LinkButton>
-    </form>
+    </div>
   );
 }

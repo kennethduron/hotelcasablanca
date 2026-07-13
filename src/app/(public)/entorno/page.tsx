@@ -7,11 +7,13 @@ import { SectionHeading } from "@/components/layout/section-heading";
 import { TourismMapDynamic } from "@/components/maps/tourism-map-dynamic";
 import { LinkButton } from "@/components/ui/button";
 import { getDestinations } from "@/lib/repositories/hotel-repository";
+import { createPageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "Entorno",
   description: "Turismo, rutas y atracciones cerca de Hotel Casa Blanca en Yoro.",
-};
+  path: "/entorno",
+});
 
 const benefits = [
   { title: "Ubicación Estratégica", icon: MapPin, text: "A solo minutos del centro de El Progreso y con fácil acceso a las principales vías." },
@@ -29,7 +31,7 @@ export default async function EnvironmentPage() {
         eyebrow="Nuestro entorno"
         title="Naturaleza, cultura y aventura te esperan"
         description="Descubre la belleza de El Progreso, Yoro y sus alrededores. Un destino lleno de experiencias únicas para todos los gustos."
-        image="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=2200&q=90"
+        images={["https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?auto=format&fit=crop&w=2200&q=88"]}
         active="Entorno"
       />
       <section className="py-16">
@@ -43,7 +45,7 @@ export default async function EnvironmentPage() {
       <section className="bg-hotel-ivory py-16">
         <div className="hotel-container">
           <SectionHeading align="left" eyebrow="Destinos destacados" title="Explora lo mejor de Honduras" description="Desde playas paradisíacas hasta sitios históricos y naturales impresionantes." />
-          <div className="mt-8"><TourismMapDynamic destinations={destinations} /></div>
+          <div className="mt-8 scroll-mt-28" id="mapa"><TourismMapDynamic destinations={destinations} /></div>
           <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {destinations.map((destination) => <article className="overflow-hidden rounded-[8px] border border-hotel-line bg-white shadow-hotel-soft" key={destination.id}><Image alt={destination.name} className="h-44 w-full object-cover" height={220} src={destination.image} width={420} /><div className="p-5"><h3 className="hotel-serif text-2xl font-bold text-hotel-forest">{destination.name}</h3><p className="text-sm text-hotel-muted">{destination.location}</p><p className="mt-3 text-sm leading-7 text-hotel-muted">{destination.description}</p><div className="mt-4 flex justify-between gap-4 text-sm"><strong>{destination.distance}</strong><strong>{destination.duration}</strong></div><LinkButton className="mt-5 w-full" href="/entorno" variant="forest">Ver detalles / Ver ruta</LinkButton></div></article>)}
           </div>

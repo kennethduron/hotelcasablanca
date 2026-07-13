@@ -6,11 +6,13 @@ import { SectionHeading } from "@/components/layout/section-heading";
 import { LinkButton } from "@/components/ui/button";
 import { ServiceCard } from "@/components/ui/service-card";
 import { getServices } from "@/lib/repositories/hotel-repository";
+import { createPageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "Servicios",
   description: "Restaurante, piscina, eventos, gimnasio, jardines y parqueo privado.",
-};
+  path: "/servicios",
+});
 
 const extras = [
   { label: "Wi-Fi de Alta Velocidad", icon: Wifi },
@@ -29,7 +31,7 @@ export default async function ServicesPage() {
         eyebrow="Nuestros servicios"
         title="Todo lo que necesitas para una estancia perfecta"
         description="Disfruta de instalaciones diseñadas para tu confort, negocios, descanso y experiencias memorables."
-        image="https://images.unsplash.com/photo-1601919051950-bb9f3ffb3fee?auto=format&fit=crop&w=2200&q=90"
+        images={["https://images.unsplash.com/photo-1601919051950-bb9f3ffb3fee?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=2200&q=88"]}
         active="Servicios"
       />
       <section className="py-16">

@@ -12,6 +12,7 @@ import {
 
 import { AdminShell, adminQuickActions } from "@/components/layout/admin-shell";
 import { cn } from "@/lib/utils";
+import { createPageMetadata } from "@/lib/metadata";
 
 const metrics: Array<{
   label: ReactNode;
@@ -55,10 +56,12 @@ const activity: ReactNode[] = [
   <>Mensaje nuevo de Luc&iacute;a Mart&iacute;nez</>,
 ];
 
-export const metadata = {
-  title: "Admin | Hotel Casa Blanca",
+export const metadata = createPageMetadata({
+  title: "Administración",
   description: "Panel administrativo de Hotel Casa Blanca.",
-};
+  path: "/admin",
+  noIndex: true,
+});
 
 export default function AdminPage() {
   return (
@@ -159,10 +162,9 @@ export default function AdminPage() {
 
         <div className="grid gap-4 sm:grid-cols-2">
           {adminQuickActions.map(({ label, helper, icon: Icon }) => (
-            <button
+            <article
               className="flex items-center gap-4 rounded-[8px] border border-hotel-line bg-white p-5 text-left shadow-hotel-soft transition hover:-translate-y-0.5 hover:border-hotel-gold hover:shadow-lg"
               key={label}
-              type="button"
             >
               <span className="grid size-12 shrink-0 place-items-center rounded-full bg-hotel-sage text-hotel-forest">
                 <Icon className="size-6" />
@@ -171,7 +173,7 @@ export default function AdminPage() {
                 <span className="block font-bold">{label}</span>
                 <span className="text-sm text-hotel-muted">{helper}</span>
               </span>
-            </button>
+            </article>
           ))}
         </div>
       </section>

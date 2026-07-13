@@ -78,4 +78,15 @@ export const destinations: Destination[] = [
       "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1000&q=85",
     coordinates: { lat: 15.7463, lng: -87.4596 },
   },
-];
+  {
+    id: "punta-sal", name: "Punta Sal / Parque Nacional Jeannette Kawas", location: "Atlántida, Honduras", distance: "105 km", duration: "2h 20m", description: "Área protegida de playas, manglares y biodiversidad caribeña.", image: "https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=1000&q=85", coordinates: { lat: 15.8547, lng: -87.6328 },
+  },
+  {
+    id: "omoa", name: "Omoa", location: "Cortés, Honduras", distance: "94 km", duration: "1h 55m", description: "Destino costero del Caribe hondureño con historia y gastronomía marina.", image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=85", coordinates: { lat: 15.7754, lng: -88.0351 },
+  },
+  {
+    id: "fortaleza-san-fernando", name: "Fortaleza de San Fernando", location: "Omoa, Cortés", distance: "95 km", duration: "2h", description: "Fortaleza colonial española frente al Caribe, patrimonio histórico de Honduras.", image: "https://images.unsplash.com/photo-1564399579883-451a5d44ec08?auto=format&fit=crop&w=1000&q=85", coordinates: { lat: 15.7742, lng: -88.0341 },
+  },
+  {
+    id: "cayos-cochinos", name: "Cayos Cochinos", location: "Islas de la Bahía, Honduras", distance: "190 km + traslado marítimo", duration: "4h 30m aprox.", description: "Archipiélago protegido; el recorrido requiere traslado marítimo adicional desde la costa.", image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1000&q=85", coordinates: { lat: 15.9667, lng: -86.5 }, marineTransferNote: "Requiere traslado marítimo adicional.",
+  },];

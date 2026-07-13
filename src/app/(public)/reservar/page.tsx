@@ -2,14 +2,18 @@ import type { Metadata } from "next";
 
 import { ReservationWizard } from "@/components/reservations/reservation-wizard";
 import { getRooms } from "@/lib/repositories/hotel-repository";
+import { createPageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "Reservar",
   description: "Solicita una reserva en Hotel Casa Blanca. La reserva queda pendiente de revisión.",
-};
+  path: "/reservar",
+});
 
-export default async function ReservePage() {
+export default async function ReservePage({ searchParams }: { searchParams: Promise<{ room?: string }> }) {
+  const { room } = await searchParams;
   const rooms = await getRooms();
+  const initialRoomId = rooms.some((item) => item.id === room) ? room : rooms[0]?.id;
 
   return (
     <main className="bg-hotel-cream">
@@ -22,7 +26,7 @@ export default async function ReservePage() {
           </p>
         </div>
       </section>
-      <ReservationWizard rooms={rooms} />
+      <ReservationWizard rooms={rooms} initialRoomId={initialRoomId} />
     </main>
   );
 }

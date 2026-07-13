@@ -7,11 +7,13 @@ import { SectionHeading } from "@/components/layout/section-heading";
 import { TourismMapDynamic } from "@/components/maps/tourism-map-dynamic";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/lib/site";
+import { createPageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "Contacto",
   description: "Contacta a Hotel Casa Blanca en El Progreso, Yoro.",
-};
+  path: "/contacto",
+});
 
 const contactItems = [
   { label: "Ubicación", value: siteConfig.address, icon: MapPin },
@@ -28,7 +30,7 @@ export default function ContactPage() {
         eyebrow="Contáctanos"
         title="Estamos aquí para ti"
         description="Será un placer atenderte y ayudarte a planificar una experiencia inolvidable en Hotel Casa Blanca."
-        image="https://images.unsplash.com/photo-1601919051950-bb9f3ffb3fee?auto=format&fit=crop&w=2200&q=90"
+        images={["https://images.unsplash.com/photo-1601919051950-bb9f3ffb3fee?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1496417263034-38ec4f0b665a?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=2200&q=88"]}
         active="Contacto"
         showWeather={false}
       />
@@ -60,5 +62,5 @@ export default function ContactPage() {
 }
 
 function Input({ label, placeholder, name }: { label: string; placeholder: string; name: string }) {
-  return <label className="text-sm font-medium text-hotel-ink">{label}<input className="mt-2 h-12 w-full rounded-[6px] border border-hotel-line bg-white px-3 outline-none transition focus:border-hotel-gold" name={name} placeholder={placeholder} /></label>;
+  return <label className="text-sm font-medium text-hotel-ink">{label}<input autoComplete={name === "name" ? "name" : name === "email" ? "email" : name === "phone" ? "tel" : undefined} className="mt-2 h-12 w-full rounded-[6px] border border-hotel-line bg-white px-3 outline-none transition focus:border-hotel-gold" name={name} placeholder={placeholder} required={name !== "phone"} type={name === "email" ? "email" : name === "phone" ? "tel" : "text"} /></label>;
 }

@@ -5,12 +5,12 @@ export const siteConfig = {
   phone: "+504 2647-1520",
   whatsapp: "+504 2647-1520",
   email: "reservas@casablanca.hn",
-  logo: "/brand/Casa_Blanca_Hotel_Logo.png",
+  logo: "/brand/casa-blanca-logo-circular.png",
   checkIn: "1:00 PM",
   checkOut: "12:00 PM",
   coordinates: {
-    lat: 15.4009,
-    lng: -87.8116,
+    lat: 15.4098598,
+    lng: -87.8042121,
   },
   social: {
     facebook: "#",

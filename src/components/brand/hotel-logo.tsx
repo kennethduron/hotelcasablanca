@@ -28,7 +28,7 @@ export function HotelLogo({
     >
       <Image
         alt="Hotel Casa Blanca"
-        className={cn("object-contain p-1.5", imageClassName)}
+        className={cn("object-cover", imageClassName)}
         fill
         priority={priority}
         sizes="96px"

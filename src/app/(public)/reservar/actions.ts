@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { sendReservationReceivedEmail } from "@/lib/email/resend";
+import { checkAvailability, type AvailabilityRequest } from "@/lib/availability-service";
 import { createReservation, getRooms } from "@/lib/repositories/hotel-repository";
 import type { PreferredContactMethod } from "@/types/hotel";
 
@@ -31,6 +32,10 @@ function getNights(checkIn: string, checkOut: string) {
   const end = new Date(`${checkOut}T00:00:00`);
   const diff = end.getTime() - start.getTime();
   return Math.round(diff / 86_400_000);
+}
+
+export async function checkAvailabilityAction(request: AvailabilityRequest) {
+  return checkAvailability(request);
 }
 
 export async function createReservationAction(formData: FormData) {
@@ -62,7 +67,9 @@ export async function createReservationAction(formData: FormData) {
   const room = rooms.find((item) => item.id === data.roomId);
   const nights = getNights(data.checkIn, data.checkOut);
 
-  if (!room || nights < 1) {
+  const availability = room ? await checkAvailability({ roomId: room.id, checkIn: data.checkIn, checkOut: data.checkOut, adults: data.adults, children: data.children }) : null;
+
+  if (!room || nights < 1 || !availability?.available) {
     redirect("/reservar?error=disponibilidad");
   }
 

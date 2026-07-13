@@ -4,7 +4,7 @@ import Image from "next/image";
 import type { Room } from "@/types/hotel";
 import { LinkButton } from "@/components/ui/button";
 
-export function RoomCard({ room, compact = false }: { room: Room; compact?: boolean }) {
+export function RoomCard({ room }: { room: Room; compact?: boolean }) {
   return (
     <article className="overflow-hidden rounded-[8px] border border-hotel-line bg-hotel-ivory shadow-hotel-card">
       <div className="relative aspect-[4/3] overflow-hidden">
@@ -24,11 +24,7 @@ export function RoomCard({ room, compact = false }: { room: Room; compact?: bool
           <span className="hotel-serif text-3xl font-bold">L{room.price.toLocaleString("es-HN")}</span>
           <span className="pb-1 text-sm text-hotel-muted">/ noche</span>
         </div>
-        {!compact ? (
-          <LinkButton className="mt-5 w-full" href="/reservar" variant="forest">
-            Ver detalles <ArrowRight className="size-4" />
-          </LinkButton>
-        ) : null}
+        <div className="mt-5 grid grid-cols-2 gap-2"><LinkButton href={`/habitaciones#${room.id}`} variant="outline">Ver detalles</LinkButton><LinkButton href={`/reservar?room=${room.id}`} variant="forest">Reservar <ArrowRight className="size-4" /></LinkButton></div>
       </div>
     </article>
   );
