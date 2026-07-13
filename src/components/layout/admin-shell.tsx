@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { HotelLogo } from "@/components/brand/hotel-logo";
+import { LogoutButton } from "@/components/auth/logout-button";
 import { cn } from "@/lib/utils";
 
 const adminItems = [
@@ -105,7 +106,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               <Hotel className="size-5 text-hotel-gold-700" />
               Hotel Casa Blanca
             </div>
+            <LogoutButton />
           </div>
+          <div className="md:hidden"><LogoutButton /></div>
         </header>
         <main className="p-4 sm:p-5 lg:p-8">{children}</main>
       </div>

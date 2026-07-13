@@ -1,8 +1,14 @@
+import "server-only";
+
 import { Resend } from "resend";
 
 import type { Reservation } from "@/types/hotel";
 
 let resend: Resend | null = null;
+
+function escapeHtml(value: string) {
+  return value.replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]!);
+}
 
 export function hasResendConfig() {
   return Boolean(process.env.RESEND_API_KEY);
@@ -38,8 +44,8 @@ export async function sendReservationReceivedEmail(reservation: Reservation) {
     html: `
       <div style="font-family:Arial,sans-serif;color:#1f2a24;line-height:1.6">
         <h1 style="color:#003322">Solicitud recibida</h1>
-        <p>Hola ${reservation.guestName},</p>
-        <p>Recibimos tu solicitud para ${reservation.roomName}. Nuestro equipo revisará disponibilidad antes de enviarte el enlace de pago.</p>
+        <p>Hola ${escapeHtml(reservation.guestName)},</p>
+        <p>Recibimos tu solicitud para ${escapeHtml(reservation.roomName)}. Nuestro equipo revisará disponibilidad antes de enviarte el enlace de pago.</p>
         <ul>
           <li><strong>Estadía:</strong> ${stay}</li>
           <li><strong>Huéspedes:</strong> ${reservation.adults} adultos, ${reservation.children} niños</li>

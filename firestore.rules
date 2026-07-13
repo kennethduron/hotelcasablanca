@@ -1,0 +1,92 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function role() { return signedIn() ? request.auth.token.role : null; }
+    function isAdmin() { return role() == 'admin'; }
+    function isReception() { return role() == 'reception'; }
+    function isManagement() { return role() == 'management'; }
+    function isStaff() { return role() == 'staff'; }
+    function isHotelStaff() {
+      return isAdmin() || isReception() || isManagement() || isStaff();
+    }
+    function isActivePublicDocument() {
+      return resource.data.active == true;
+    }
+
+    match /rooms/{documentId} {
+      allow get, list: if isActivePublicDocument() || isHotelStaff();
+      allow create, update, delete: if isAdmin();
+    }
+    match /services/{documentId} {
+      allow get, list: if isActivePublicDocument() || isHotelStaff();
+      allow create, update, delete: if isAdmin();
+    }
+    match /destinations/{documentId} {
+      allow get, list: if isActivePublicDocument() || isHotelStaff();
+      allow create, update, delete: if isAdmin();
+    }
+    match /gallery/{documentId} {
+      allow get, list: if isActivePublicDocument() || isHotelStaff();
+      allow create, update, delete: if isAdmin();
+    }
+    match /settings/{documentId} {
+      allow get, list: if (documentId == 'public' && resource.data.visibility == 'public') || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /reservations/{reservationId} {
+      allow read: if isAdmin() || isReception() || isManagement();
+      allow create: if false;
+      allow update: if (isAdmin() &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+          'status', 'paymentLink', 'paymentStatus', 'approvedBy', 'confirmedBy',
+          'ratePerNight', 'taxes', 'total', 'createdAt', 'roomId'
+        ])) || (isReception() &&
+        request.resource.data.status in ['checked_in', 'checked_out', 'cancelled', 'no_show'] &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+          'paymentLink', 'paymentStatus', 'approvedBy', 'confirmedBy',
+          'ratePerNight', 'taxes', 'total', 'createdAt', 'roomId'
+        ])
+      );
+      allow delete: if isAdmin();
+    }
+    match /guests/{guestId} {
+      allow read: if isAdmin() || isReception() || isManagement();
+      allow create, update: if isAdmin() || isReception();
+      allow delete: if isAdmin();
+    }
+    match /blocked_dates/{blockId} {
+      allow read: if isAdmin() || isReception() || isManagement();
+      allow create, update: if isAdmin() || isReception();
+      allow delete: if isAdmin();
+    }
+    match /messages/{messageId} {
+      allow read, update: if isAdmin() || isReception();
+      allow create: if false;
+      allow delete: if isAdmin();
+    }
+    match /activity_logs/{logId} {
+      allow read: if isAdmin() || isManagement();
+      allow create: if isHotelStaff() && request.resource.data.actorId == request.auth.uid;
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+    match /users/{userId} {
+      allow read: if isAdmin() || (signedIn() && request.auth.uid == userId);
+      allow create, update, delete: if isAdmin();
+    }
+    match /reports/{reportId} {
+      allow read: if isAdmin() || isManagement();
+      allow write: if isAdmin();
+    }
+    match /admin_settings/{documentId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

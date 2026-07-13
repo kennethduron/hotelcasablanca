@@ -1,27 +1,36 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { z } from "zod";
 
 import { sendReservationReceivedEmail } from "@/lib/email/resend";
 import { checkAvailability, type AvailabilityRequest } from "@/lib/availability-service";
 import { createReservation, getRooms } from "@/lib/repositories/hotel-repository";
 import type { PreferredContactMethod } from "@/types/hotel";
+import { enforceRateLimit } from "@/lib/security/rate-limit";
 
+const availabilityRequestSchema = z.object({
+  roomId: z.string().min(1).max(120),
+  checkIn: z.iso.date(),
+  checkOut: z.iso.date(),
+  adults: z.number().int().min(1).max(8),
+  children: z.number().int().min(0).max(8),
+});
 const reservationSchema = z.object({
   checkIn: z.iso.date(),
   checkOut: z.iso.date(),
-  roomId: z.string().min(1),
+  roomId: z.string().min(1).max(120),
   adults: z.coerce.number().int().min(1).max(8),
   children: z.coerce.number().int().min(0).max(8),
-  guestName: z.string().min(2),
-  guestEmail: z.email(),
-  guestPhone: z.string().min(8),
-  guestCountry: z.string().min(2),
-  guestDocumentNumber: z.string().min(4),
-  guestDocumentType: z.string().min(2),
-  guestAddress: z.string().optional(),
-  notes: z.string().optional(),
+  guestName: z.string().trim().min(2).max(120),
+  guestEmail: z.email().max(254),
+  guestPhone: z.string().trim().min(8).max(30),
+  guestCountry: z.string().trim().min(2).max(80),
+  guestDocumentNumber: z.string().trim().min(4).max(60),
+  guestDocumentType: z.string().trim().min(2).max(40),
+  guestAddress: z.string().trim().max(300).optional(),
+  notes: z.string().trim().max(1000).optional(),
   preferredContactMethod: z.enum(["WhatsApp", "Correo electrónico", "Llamada telefónica"]),
   termsAccepted: z.literal("on"),
   dataProcessingAccepted: z.literal("on"),
@@ -35,10 +44,13 @@ function getNights(checkIn: string, checkOut: string) {
 }
 
 export async function checkAvailabilityAction(request: AvailabilityRequest) {
-  return checkAvailability(request);
+  return checkAvailability(availabilityRequestSchema.parse(request));
 }
 
 export async function createReservationAction(formData: FormData) {
+  const requestHeaders = await headers();
+  const ip = requestHeaders.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  enforceRateLimit(`reservation:${ip}`, 3, 15 * 60 * 1000);
   const parsed = reservationSchema.safeParse({
     checkIn: formData.get("checkIn"),
     checkOut: formData.get("checkOut"),

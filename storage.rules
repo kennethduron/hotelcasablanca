@@ -1,0 +1,45 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() { return request.auth != null; }
+    function isAdmin() { return signedIn() && request.auth.token.role == 'admin'; }
+    function validImage() {
+      return request.resource != null
+        && request.resource.size <= 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/(jpeg|png|webp|avif)');
+    }
+    function safeName(fileName) {
+      return fileName.matches('^[A-Za-z0-9][A-Za-z0-9._-]{0,119}$');
+    }
+
+    match /rooms/{roomId}/{fileName} {
+      allow read: if resource.metadata.published == 'true' || isAdmin();
+      allow create: if isAdmin() && validImage() && safeName(fileName);
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+    match /services/{serviceId}/{fileName} {
+      allow read: if resource.metadata.published == 'true' || isAdmin();
+      allow create: if isAdmin() && validImage() && safeName(fileName);
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+    match /destinations/{destinationId}/{fileName} {
+      allow read: if resource.metadata.published == 'true' || isAdmin();
+      allow create: if isAdmin() && validImage() && safeName(fileName);
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+    match /gallery/{category}/{fileName} {
+      allow read: if resource.metadata.published == 'true' || isAdmin();
+      allow create: if isAdmin() && validImage() && safeName(fileName);
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

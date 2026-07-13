@@ -13,6 +13,7 @@ import {
 import { AdminShell, adminQuickActions } from "@/components/layout/admin-shell";
 import { cn } from "@/lib/utils";
 import { createPageMetadata } from "@/lib/metadata";
+import { requireAdminSession } from "@/lib/auth/session";
 
 const metrics: Array<{
   label: ReactNode;
@@ -56,6 +57,8 @@ const activity: ReactNode[] = [
   <>Mensaje nuevo de Luc&iacute;a Mart&iacute;nez</>,
 ];
 
+export const dynamic = "force-dynamic";
+
 export const metadata = createPageMetadata({
   title: "Administración",
   description: "Panel administrativo de Hotel Casa Blanca.",
@@ -63,7 +66,8 @@ export const metadata = createPageMetadata({
   noIndex: true,
 });
 
-export default function AdminPage() {
+export default async function AdminPage() {
+  await requireAdminSession();
   return (
     <AdminShell>
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
