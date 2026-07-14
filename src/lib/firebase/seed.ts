@@ -9,10 +9,37 @@ import { getAdminDb } from "@/lib/firebase/admin";
 import { firestoreCollections } from "@/lib/firebase/collections";
 
 export async function seedFirebaseDemoData() {
-  const db = getAdminDb(); const batch = db.batch();
-  for (const room of rooms) batch.set(db.collection(firestoreCollections.rooms).doc(room.id), { ...room, active: true, createdAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() });
-  for (const destination of destinations) batch.set(db.collection(firestoreCollections.destinations).doc(destination.id), { ...destination, active: true, createdAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() });
-  for (const image of galleryImages) batch.set(db.collection(firestoreCollections.gallery).doc(image.id), { ...image, active: true, createdAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() });
-  for (const service of mainServices) batch.set(db.collection(firestoreCollections.services).doc(service.id), { id: service.id, name: service.name, description: service.description, image: service.image, active: true, createdAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() });
-  await batch.commit();
+  const db = getAdminDb();
+  const created: string[] = [];
+  const omitted: string[] = [];
+
+  async function createIfMissing(collection: string, id: string, data: object) {
+    const reference = db.collection(collection).doc(id);
+    const snapshot = await reference.get();
+    if (snapshot.exists) {
+      omitted.push(`${collection}/${id}`);
+      return;
+    }
+    await reference.set({
+      ...data,
+      active: true,
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+    created.push(`${collection}/${id}`);
+  }
+
+  for (const room of rooms) await createIfMissing(firestoreCollections.rooms, room.id, room);
+  for (const destination of destinations) await createIfMissing(firestoreCollections.destinations, destination.id, destination);
+  for (const image of galleryImages) await createIfMissing(firestoreCollections.gallery, image.id, image);
+  for (const service of mainServices) {
+    await createIfMissing(firestoreCollections.services, service.id, {
+      id: service.id,
+      name: service.name,
+      description: service.description,
+      image: service.image,
+    });
+  }
+
+  return { created, omitted, updated: [] as string[] };
 }

@@ -11,8 +11,9 @@ import { cn } from "@/lib/utils";
 interface PageHeroProps { eyebrow: string; title: string; description: string; image?: string; images?: string[]; showWeather?: boolean; showActions?: boolean; bookingVariant?: "floating" | "below"; active?: string }
 export function PageHero({ eyebrow, title, description, image, images, showWeather = true, showActions = false, bookingVariant = "floating", active }: PageHeroProps) {
   const slides = images?.length ? images.slice(0, 4) : image ? [image] : [];
-  const [current, setCurrent] = useState(0); const [paused, setPaused] = useState(false); const touch = useRef<number | null>(null);
-  useEffect(() => { if (paused || slides.length < 2) return; const timer = window.setInterval(() => setCurrent((value) => (value + 1) % slides.length), 4000); return () => window.clearInterval(timer); }, [paused, slides.length]);
+  const [current, setCurrent] = useState(0); const [paused, setPaused] = useState(false); const [reducedMotion, setReducedMotion] = useState(() => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches); const touch = useRef<number | null>(null);
+  useEffect(() => { const media = window.matchMedia("(prefers-reduced-motion: reduce)"); const update = () => setReducedMotion(media.matches); media.addEventListener("change", update); return () => media.removeEventListener("change", update); }, []);
+  useEffect(() => { if (paused || reducedMotion || slides.length < 2) return; const timer = window.setInterval(() => setCurrent((value) => (value + 1) % slides.length), 4000); return () => window.clearInterval(timer); }, [paused, reducedMotion, slides.length]);
   const move = (delta: number) => setCurrent((value) => (value + delta + slides.length) % slides.length);
   return <section className="relative" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onTouchStart={(event) => { touch.current = event.touches[0]?.clientX ?? null; }} onTouchEnd={(event) => { if (touch.current === null) return; const delta = (event.changedTouches[0]?.clientX ?? touch.current) - touch.current; if (Math.abs(delta) > 45) move(delta > 0 ? -1 : 1); touch.current = null; }}>
     <div className="relative min-h-[520px] overflow-hidden bg-hotel-forest-900 text-white">

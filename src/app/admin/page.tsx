@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import {
-  ArrowUpRight,
   BedDouble,
   CalendarCheck,
   CircleDollarSign,
@@ -10,52 +9,25 @@ import {
   Users,
 } from "lucide-react";
 
-import { AdminShell, adminQuickActions } from "@/components/layout/admin-shell";
+import { AdminShell } from "@/components/layout/admin-shell";
 import { cn } from "@/lib/utils";
 import { createPageMetadata } from "@/lib/metadata";
 import { requireAdminSession } from "@/lib/auth/session";
+import { getAdminDashboardData } from "@/lib/repositories/hotel-repository";
+import type { Reservation } from "@/types/hotel";
 
-const metrics: Array<{
-  label: ReactNode;
-  value: string;
-  change: string;
-  icon: typeof CalendarCheck;
-  tone: "green" | "red";
-}> = [
-  { label: <>Reservaciones Hoy</>, value: "8", change: "14% vs ayer", icon: CalendarCheck, tone: "green" },
-  { label: <>Check-ins Hoy</>, value: "6", change: "20% vs ayer", icon: Users, tone: "green" },
-  { label: <>Check-outs Hoy</>, value: "3", change: "10% vs ayer", icon: DoorOpen, tone: "red" },
-  { label: <>Ocupaci&oacute;n Actual</>, value: "72%", change: "8% vs ayer", icon: BedDouble, tone: "green" },
-  { label: <>Ingresos del Mes</>, value: "L 328,450", change: "18% vs mes anterior", icon: CircleDollarSign, tone: "green" },
-];
+const statusLabels: Record<string, string> = {
+  pending_review: "Pendiente de revisión",
+  awaiting_payment: "En espera de pago",
+  confirmed: "Confirmada",
+  paid: "Confirmada",
+  checked_in: "Check-in realizado",
+  checked_out: "Check-out realizado",
+  cancelled: "Cancelada",
+};
 
-const recentReservations: Array<{
-  guest: ReactNode;
-  room: ReactNode;
-  date: string;
-  status: ReactNode;
-}> = [
-  { guest: <>Mar&iacute;a Fernanda L&oacute;pez</>, room: <>Suite Premium</>, date: "20 May 2026", status: <>Confirmada</> },
-  { guest: <>Carlos Eduardo Medina</>, room: <>Habitaci&oacute;n Ejecutiva</>, date: "20 May 2026", status: <>Check-in</> },
-  { guest: <>Ana Patricia Torres</>, room: <>Habitaci&oacute;n Doble</>, date: "21 May 2026", status: <>Pendiente de revisi&oacute;n</> },
-  { guest: <>Jos&eacute; Antonio Rivera</>, room: <>Suite Familiar</>, date: "21 May 2026", status: <>Confirmada</> },
-];
-
-const roomStates = [
-  { label: "Disponibles", detail: "18 habitaciones", value: "45%", color: "text-emerald-700" },
-  { label: "Ocupadas", detail: "26 habitaciones", value: "30%", color: "text-amber-700" },
-  { label: "Reservadas", detail: "12 habitaciones", value: "15%", color: "text-blue-700" },
-  { label: "Mantenimiento", detail: "4 habitaciones", value: "5%", color: "text-red-700" },
-  { label: "Fuera de Servicio", detail: "0 habitaciones", value: "0%", color: "text-hotel-muted" },
-];
-
-const activity: ReactNode[] = [
-  <>Nueva reservaci&oacute;n realizada por Mar&iacute;a Fernanda L&oacute;pez</>,
-  <>Check-in completado: Carlos Eduardo Medina</>,
-  <>Nueva consulta de evento corporativo</>,
-  <>Pago registrado de L 4,200 por Jos&eacute; Antonio Rivera</>,
-  <>Mensaje nuevo de Luc&iacute;a Mart&iacute;nez</>,
-];
+const currency = new Intl.NumberFormat("es-HN", { style: "currency", currency: "HNL", maximumFractionDigits: 0 });
+const dateFormatter = new Intl.DateTimeFormat("es-HN", { day: "numeric", month: "long", year: "numeric", timeZone: "America/Tegucigalpa" });
 
 export const dynamic = "force-dynamic";
 
@@ -66,12 +38,36 @@ export const metadata = createPageMetadata({
   noIndex: true,
 });
 
+function formatDate(value: string) {
+  if (!value) return "Sin fecha";
+  return dateFormatter.format(new Date(`${value}T00:00:00`));
+}
+
+function statusLabel(status: Reservation["status"]) {
+  return statusLabels[String(status).toLowerCase()] ?? String(status);
+}
+
 export default async function AdminPage() {
   await requireAdminSession();
+  const dashboard = await getAdminDashboardData();
+  const metrics: Array<{
+    label: ReactNode;
+    value: string;
+    helper: string;
+    icon: typeof CalendarCheck;
+    tone: "green" | "red";
+  }> = [
+    { label: <>Reservas hoy</>, value: String(dashboard.metrics.reservationsToday), helper: "Solicitudes y entradas del día", icon: CalendarCheck, tone: "green" },
+    { label: <>Check-ins hoy</>, value: String(dashboard.metrics.checkInsToday), helper: "Llegadas programadas", icon: Users, tone: "green" },
+    { label: <>Check-outs hoy</>, value: String(dashboard.metrics.checkOutsToday), helper: "Salidas programadas", icon: DoorOpen, tone: "red" },
+    { label: <>Ocupación actual</>, value: `${dashboard.metrics.occupancyPercent}%`, helper: "Según reservas confirmadas", icon: BedDouble, tone: "green" },
+    { label: <>Ingresos del mes</>, value: currency.format(dashboard.metrics.monthlyRevenue), helper: "Pagos confirmados", icon: CircleDollarSign, tone: "green" },
+  ];
+
   return (
-    <AdminShell>
+    <AdminShell unreadMessages={dashboard.unreadMessages}>
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-        {metrics.map(({ label, value, change, icon: Icon, tone }, index) => (
+        {metrics.map(({ label, value, helper, icon: Icon, tone }, index) => (
           <article className="rounded-[8px] border border-hotel-line bg-white p-5 shadow-hotel-soft" key={`${index}-${value}`}>
             <div className="flex items-center justify-between gap-4">
               <div>
@@ -82,58 +78,36 @@ export default async function AdminPage() {
                 <Icon className="size-7" />
               </span>
             </div>
-            <p className={cn("mt-3 flex items-center gap-1 text-sm", tone === "red" ? "text-red-700" : "text-emerald-700")}>
-              <ArrowUpRight className="size-4" /> {change}
-            </p>
+            <p className={cn("mt-3 text-sm", tone === "red" ? "text-red-700" : "text-emerald-700")}>{helper}</p>
           </article>
         ))}
       </section>
 
-      <section className="mt-6 grid gap-6 xl:grid-cols-[1.35fr_1fr_1fr]">
+      <section className="mt-6 grid gap-6 xl:grid-cols-[1.1fr_1fr]">
         <article className="rounded-[8px] border border-hotel-line bg-white p-6 shadow-hotel-soft">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold">Ocupaci&oacute;n de Habitaciones</h2>
-            <span className="rounded-full bg-hotel-sage px-3 py-1 text-xs font-bold text-hotel-forest">Este mes</span>
-          </div>
-          <div className="mt-6 h-64 rounded-[8px] bg-gradient-to-b from-hotel-sage/60 to-white p-5">
-            <div className="flex h-full items-end gap-3 border-b border-l border-hotel-line px-2 pb-2">
-              {[32, 38, 48, 40, 56, 50, 44, 62, 58, 72, 64, 52, 61, 68, 60].map((height, index) => (
-                <div className="flex flex-1 items-end" key={`${height}-${index}`}>
-                  <span
-                    className="w-full rounded-t bg-hotel-forest"
-                    style={{ height: `${height}%` }}
-                    title={`${height}%`}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        </article>
-
-        <article className="rounded-[8px] border border-hotel-line bg-white p-6 shadow-hotel-soft">
-          <h2 className="text-lg font-bold">Reservaciones Recientes</h2>
+          <h2 className="text-lg font-bold">Reservas recientes</h2>
           <div className="mt-5 space-y-4">
-            {recentReservations.map((item, index) => (
-              <div className="flex items-start justify-between gap-3 border-b border-hotel-line pb-4 last:border-0 last:pb-0" key={index}>
+            {dashboard.recentReservations.length ? dashboard.recentReservations.map((item) => (
+              <div className="flex items-start justify-between gap-3 border-b border-hotel-line pb-4 last:border-0 last:pb-0" key={item.id}>
                 <div>
-                  <p className="font-semibold">{item.guest}</p>
-                  <p className="text-sm text-hotel-muted">{item.room}</p>
+                  <p className="font-semibold">{item.guestName}</p>
+                  <p className="text-sm text-hotel-muted">{item.roomName}</p>
                 </div>
                 <div className="text-right text-sm">
-                  <p>{item.date}</p>
+                  <p>{formatDate(item.checkIn)}</p>
                   <span className="mt-1 inline-flex rounded-full bg-hotel-sage px-2 py-1 text-xs font-semibold text-hotel-forest">
-                    {item.status}
+                    {statusLabel(item.status)}
                   </span>
                 </div>
               </div>
-            ))}
+            )) : <p className="text-sm text-hotel-muted">Aún no hay reservas registradas.</p>}
           </div>
         </article>
 
         <article className="rounded-[8px] border border-hotel-line bg-white p-6 shadow-hotel-soft">
-          <h2 className="text-lg font-bold">Habitaciones por Estado</h2>
+          <h2 className="text-lg font-bold">Habitaciones por estado</h2>
           <div className="mt-5 space-y-4">
-            {roomStates.map((item) => (
+            {dashboard.roomStates.length ? dashboard.roomStates.map((item) => (
               <div className="flex items-center justify-between gap-4 border-b border-hotel-line pb-3 last:border-0 last:pb-0" key={item.label}>
                 <div>
                   <p className="font-semibold">{item.label}</p>
@@ -141,44 +115,22 @@ export default async function AdminPage() {
                 </div>
                 <span className={cn("text-xl font-bold", item.color)}>{item.value}</span>
               </div>
-            ))}
+            )) : <p className="text-sm text-hotel-muted">No hay habitaciones registradas.</p>}
           </div>
         </article>
       </section>
 
-      <section className="mt-6 grid gap-6 xl:grid-cols-[1.1fr_1fr]">
-        <article className="rounded-[8px] border border-hotel-line bg-white p-6 shadow-hotel-soft">
-          <h2 className="text-lg font-bold">Actividad Reciente</h2>
-          <div className="mt-5 space-y-4">
-            {activity.map((item, index) => (
-              <div className="flex items-start gap-3" key={index}>
-                <span className="mt-1 grid size-8 shrink-0 place-items-center rounded-full bg-hotel-sage text-hotel-forest">
-                  {index < 2 ? <Clock className="size-4" /> : <ClipboardCheck className="size-4" />}
-                </span>
-                <div>
-                  <p className="font-medium">{item}</p>
-                  <p className="text-sm text-hotel-muted">Hace {index + 1}0 min</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </article>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          {adminQuickActions.map(({ label, helper, icon: Icon }) => (
-            <article
-              className="flex items-center gap-4 rounded-[8px] border border-hotel-line bg-white p-5 text-left shadow-hotel-soft transition hover:-translate-y-0.5 hover:border-hotel-gold hover:shadow-lg"
-              key={label}
-            >
-              <span className="grid size-12 shrink-0 place-items-center rounded-full bg-hotel-sage text-hotel-forest">
-                <Icon className="size-6" />
+      <section className="mt-6 rounded-[8px] border border-hotel-line bg-white p-6 shadow-hotel-soft">
+        <h2 className="text-lg font-bold">Actividad reciente</h2>
+        <div className="mt-5 space-y-4">
+          {dashboard.activity.length ? dashboard.activity.map((item, index) => (
+            <div className="flex items-start gap-3" key={`${item}-${index}`}>
+              <span className="mt-1 grid size-8 shrink-0 place-items-center rounded-full bg-hotel-sage text-hotel-forest">
+                {index < 2 ? <Clock className="size-4" /> : <ClipboardCheck className="size-4" />}
               </span>
-              <span>
-                <span className="block font-bold">{label}</span>
-                <span className="text-sm text-hotel-muted">{helper}</span>
-              </span>
-            </article>
-          ))}
+              <p className="font-medium">{item}</p>
+            </div>
+          )) : <p className="text-sm text-hotel-muted">Aún no hay actividad registrada.</p>}
         </div>
       </section>
     </AdminShell>

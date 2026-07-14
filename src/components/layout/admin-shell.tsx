@@ -31,7 +31,7 @@ const adminItems = [
   { label: "Configuración", icon: Settings },
 ];
 
-export function AdminShell({ children }: { children: React.ReactNode }) {
+export function AdminShell({ children, unreadMessages = 0 }: { children: React.ReactNode; unreadMessages?: number }) {
   return (
     <div className="min-h-screen bg-hotel-cream text-hotel-ink lg:grid lg:grid-cols-[280px_1fr]">
       <aside className="hidden hotel-dark-gradient p-6 text-white lg:block">
@@ -97,9 +97,11 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             </label>
             <div className="relative">
               <Bell className="size-6 text-hotel-forest" />
-              <span className="absolute -right-2 -top-2 grid size-5 place-items-center rounded-full bg-red-600 text-[10px] font-bold text-white">
-                5
-              </span>
+              {unreadMessages > 0 ? (
+                <span className="absolute -right-2 -top-2 grid size-5 place-items-center rounded-full bg-red-600 text-[10px] font-bold text-white">
+                  {unreadMessages > 9 ? "9+" : unreadMessages}
+                </span>
+              ) : null}
             </div>
             <div className="h-8 w-px bg-hotel-line" />
             <div className="flex items-center gap-2 text-sm font-semibold">
@@ -115,11 +117,3 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
-
-export const adminQuickActions = [
-  { label: "Nueva Reservación", helper: "Crear una nueva reserva", icon: CalendarDays },
-  { label: "Bloquear Fechas", helper: "Cerrar fechas en el calendario", icon: CalendarDays },
-  { label: "Reporte de Ingresos", helper: "Ver reporte financiero", icon: Hotel },
-  { label: "Gestionar Habitaciones", helper: "Administrar habitaciones", icon: Hotel },
-  { label: "Mensajes", helper: "Ver mensajes recibidos", icon: Mail },
-];

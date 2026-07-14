@@ -8,7 +8,7 @@ import { LinkButton } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 const navItems = [
  { href:"/", label:"Inicio" },
- { href:"/habitaciones", label:"Habitaciones", children:[{label:"Habitación Ejecutiva",href:"/habitaciones#habitacion-ejecutiva"},{label:"Suite Premium",href:"/habitaciones#suite-premium"},{label:"Habitación Doble",href:"/habitaciones#habitacion-doble"},{label:"Suite Familiar",href:"/habitaciones#suite-familiar"}]},
+ { href:"/habitaciones", label:"Habitaciones", children:[{label:"Habitación Ejecutiva",href:"/reservar?room=habitacion-ejecutiva"},{label:"Suite Premium",href:"/reservar?room=suite-premium"},{label:"Habitación Doble",href:"/reservar?room=habitacion-doble"},{label:"Suite Familiar",href:"/reservar?room=suite-familiar"}]},
  { href:"/servicios", label:"Servicios", children:[{label:"Restaurante",href:"/servicios#restaurante"},{label:"Eventos y Negocios",href:"/servicios#eventos"},{label:"Piscina",href:"/servicios#piscina"},{label:"Jardines Naturales",href:"/servicios#jardines"},{label:"Parqueo Privado",href:"/servicios#parqueo"},{label:"Gimnasio",href:"/servicios#gimnasio"}]},
  { href:"/entorno", label:"Entorno", children:[{label:"Turismo",href:"/entorno#turismo"},{label:"Mapa interactivo",href:"/entorno#mapa"},{label:"Atracciones cercanas",href:"/entorno#atracciones"},{label:"Cómo llegar",href:"/contacto#mapa"}]},
  { href:"/contacto", label:"Contacto" },
