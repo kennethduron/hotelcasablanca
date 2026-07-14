@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 export function WeatherTimeCard() {
   const [time, setTime] = useState("05:57 pm");
-  const [date, setDate] = useState("Martes, 20 de mayo de 2026");
+  const [date, setDate] = useState("martes, 20 de mayo de 2026");
 
   useEffect(() => {
     const formatter = new Intl.DateTimeFormat("es-HN", {
@@ -44,7 +44,7 @@ export function WeatherTimeCard() {
         Hora local
       </p>
       <p className="hotel-serif mt-2 text-3xl font-semibold">{time}</p>
-      <p className="mt-1 text-xs capitalize text-white/70">{date}</p>
+      <p className="mt-1 text-xs text-white/70">{date}</p>
     </aside>
   );
 }
