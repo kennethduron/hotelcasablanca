@@ -10,8 +10,7 @@
                     "typecheck":  "tsc --noEmit",
                     "test:rules":  "firebase emulators:exec --only firestore,storage \"node --test tests/firebase-rules.test.mjs\"",
                     "admin:set-role":  "node --experimental-strip-types scripts/set-admin-role.ts",
-                    "seed:public":  "node --experimental-strip-types scripts/seed-public-content.ts",
-                    "verify:firebase-env":  "node --experimental-strip-types scripts/verify-firebase-env.ts"
+                    "seed:public":  "node --experimental-strip-types scripts/seed-public-content.ts"
                 },
     "dependencies":  {
                          "clsx":  "^2.1.1",
