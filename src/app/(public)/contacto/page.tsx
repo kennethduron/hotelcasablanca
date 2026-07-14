@@ -1,4 +1,4 @@
-﻿import { Clock, Mail, MapPin, MessageCircle, Phone, Send } from "lucide-react";
+import { Clock, Mail, MapPin, MessageCircle, Phone, Send } from "lucide-react";
 import type { Metadata } from "next";
 
 import { createContactMessageAction } from "@/app/(public)/contacto/actions";
@@ -7,6 +7,7 @@ import { SectionHeading } from "@/components/layout/section-heading";
 import { TourismMapDynamic } from "@/components/maps/tourism-map-dynamic";
 import { Button } from "@/components/ui/button";
 import { destinationsRepository } from "@/lib/repositories/destinations-repository";
+import { roomsRepository } from "@/lib/repositories/rooms-repository";
 import { settingsRepository } from "@/lib/repositories/settings-repository";
 import { siteConfig } from "@/lib/site";
 import { createPageMetadata } from "@/lib/metadata";
@@ -20,9 +21,10 @@ export const metadata: Metadata = createPageMetadata({
 });
 
 export default async function ContactPage() {
-  const [settings, destinations] = await Promise.all([
+  const [settings, destinations, rooms] = await Promise.all([
     settingsRepository.get(),
     destinationsRepository.getAll(),
+    roomsRepository.getAll(),
   ]);
   const contactItems = [
     { label: "Ubicación", value: settings?.address ?? siteConfig.address, icon: MapPin },
@@ -41,6 +43,7 @@ export default async function ContactPage() {
         images={["https://images.unsplash.com/photo-1601919051950-bb9f3ffb3fee?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1496417263034-38ec4f0b665a?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=2200&q=88"]}
         active="Contacto"
         showWeather={false}
+        bookingRooms={rooms}
       />
       <section className="py-16">
         <div className="hotel-container">

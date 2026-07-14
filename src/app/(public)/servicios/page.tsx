@@ -1,10 +1,11 @@
-﻿import { Bell, ConciergeBell, ShieldCheck, Shirt, Wifi } from "lucide-react";
+import { Bell, ConciergeBell, ShieldCheck, Shirt, Wifi } from "lucide-react";
 import type { Metadata } from "next";
 
 import { PageHero } from "@/components/layout/page-hero";
 import { SectionHeading } from "@/components/layout/section-heading";
 import { LinkButton } from "@/components/ui/button";
 import { ServiceCard } from "@/components/ui/service-card";
+import { roomsRepository } from "@/lib/repositories/rooms-repository";
 import { servicesRepository } from "@/lib/repositories/services-repository";
 import { createPageMetadata } from "@/lib/metadata";
 
@@ -25,7 +26,7 @@ const extras = [
 ];
 
 export default async function ServicesPage() {
-  const mainServices = await servicesRepository.getAll();
+  const [mainServices, rooms] = await Promise.all([servicesRepository.getAll(), roomsRepository.getAll()]);
 
   return (
     <main>
@@ -35,6 +36,7 @@ export default async function ServicesPage() {
         description="Disfruta de instalaciones diseñadas para tu confort, negocios, descanso y experiencias memorables."
         images={["https://images.unsplash.com/photo-1601919051950-bb9f3ffb3fee?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=2200&q=88"]}
         active="Servicios"
+        bookingRooms={rooms}
       />
       <section className="py-16">
         <div className="hotel-container">

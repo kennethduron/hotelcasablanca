@@ -1,4 +1,4 @@
-﻿import { ArrowRight, Bell, Car, Leaf, ShieldCheck, Utensils, Wifi } from "lucide-react";
+import { ArrowRight, Bell, Car, Leaf, ShieldCheck, Utensils, Wifi } from "lucide-react";
 import type { Metadata } from "next";
 
 import { PageHero } from "@/components/layout/page-hero";
@@ -24,7 +24,7 @@ const icons = [Leaf, ShieldCheck, Wifi, Car, Utensils, Bell];
 
 export default async function HomePage() {
   const [rooms, destinations, services, settings] = await Promise.all([
-    roomsRepository.getFeatured(),
+    roomsRepository.getAll(),
     destinationsRepository.getAll(),
     servicesRepository.getAll(),
     settingsRepository.get(),
@@ -38,6 +38,7 @@ export default async function HomePage() {
         description={settings?.slogan ?? "Naturaleza, confort y hospitalidad en perfecta armonía."}
         images={["https://images.unsplash.com/photo-1601919051950-bb9f3ffb3fee?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1496417263034-38ec4f0b665a?auto=format&fit=crop&w=2200&q=88"]}
         showActions
+        bookingRooms={rooms}
       />
 
       <section className="border-b border-hotel-line bg-hotel-ivory py-10">

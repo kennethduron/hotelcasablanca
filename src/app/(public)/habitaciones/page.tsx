@@ -1,4 +1,4 @@
-﻿import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 
 import { PageHero } from "@/components/layout/page-hero";
@@ -30,6 +30,7 @@ export default async function RoomsPage() {
         images={["https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=2200&q=88"]}
         active="Habitaciones"
         showWeather={false}
+        bookingRooms={rooms}
       />
       <section className="py-16">
         <div className="hotel-container">
