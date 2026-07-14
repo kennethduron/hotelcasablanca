@@ -1,4 +1,4 @@
-import { ArrowRight, Bell, Car, Leaf, ShieldCheck, Utensils, Wifi } from "lucide-react";
+﻿import { ArrowRight, Bell, Car, Leaf, ShieldCheck, Utensils, Wifi } from "lucide-react";
 import type { Metadata } from "next";
 
 import { PageHero } from "@/components/layout/page-hero";
@@ -6,9 +6,13 @@ import { SectionHeading } from "@/components/layout/section-heading";
 import { TourismMapDynamic } from "@/components/maps/tourism-map-dynamic";
 import { LinkButton } from "@/components/ui/button";
 import { RoomCard } from "@/components/ui/room-card";
-import { quickBenefits } from "@/data/services";
-import { getDestinations, getRooms } from "@/lib/repositories/hotel-repository";
+import { destinationsRepository } from "@/lib/repositories/destinations-repository";
+import { roomsRepository } from "@/lib/repositories/rooms-repository";
+import { servicesRepository } from "@/lib/repositories/services-repository";
+import { settingsRepository } from "@/lib/repositories/settings-repository";
 import { createPageMetadata } from "@/lib/metadata";
+
+export const revalidate = 300;
 
 export const metadata: Metadata = createPageMetadata({
   title: "Inicio",
@@ -19,32 +23,38 @@ export const metadata: Metadata = createPageMetadata({
 const icons = [Leaf, ShieldCheck, Wifi, Car, Utensils, Bell];
 
 export default async function HomePage() {
-  const [rooms, destinations] = await Promise.all([getRooms(), getDestinations()]);
+  const [rooms, destinations, services, settings] = await Promise.all([
+    roomsRepository.getFeatured(),
+    destinationsRepository.getAll(),
+    servicesRepository.getAll(),
+    settingsRepository.get(),
+  ]);
 
   return (
     <main>
       <PageHero
         eyebrow="Exclusividad & Naturaleza"
         title="Su oasis de descanso en El Progreso, Yoro"
-        description="Naturaleza, confort y hospitalidad en perfecta armonía."
+        description={settings?.slogan ?? "Naturaleza, confort y hospitalidad en perfecta armonía."}
         images={["https://images.unsplash.com/photo-1601919051950-bb9f3ffb3fee?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1496417263034-38ec4f0b665a?auto=format&fit=crop&w=2200&q=88"]}
         showActions
       />
 
       <section className="border-b border-hotel-line bg-hotel-ivory py-10">
         <div className="hotel-container grid gap-6 md:grid-cols-3 lg:grid-cols-6">
-          {quickBenefits.map((benefit, index) => {
-            const Icon = icons[index];
+          {services.slice(0, 6).map((service, index) => {
+            const Icon = icons[index] ?? ShieldCheck;
             return (
-              <div className="flex items-center gap-3 md:border-r md:border-hotel-line md:pr-4" key={benefit}>
+              <div className="flex items-center gap-3 md:border-r md:border-hotel-line md:pr-4" key={service.slug}>
                 <Icon className="size-8 shrink-0 text-hotel-forest" />
                 <div>
-                  <h3 className="text-xs font-bold uppercase text-hotel-forest">{benefit}</h3>
+                  <h3 className="text-xs font-bold uppercase text-hotel-forest">{service.title}</h3>
                   <p className="mt-1 text-xs leading-5 text-hotel-muted">Servicio cálido y dedicado a cada detalle.</p>
                 </div>
               </div>
             );
           })}
+          {!services.length ? <p className="text-sm text-hotel-muted lg:col-span-6">Los servicios públicos no están disponibles en este momento.</p> : null}
         </div>
       </section>
 
@@ -66,9 +76,11 @@ export default async function HomePage() {
             <SectionHeading align="left" eyebrow="Nuestras habitaciones" title="Descanso para cada ocasión" />
             <LinkButton href="/habitaciones" variant="outline">Ver todas las habitaciones <ArrowRight className="size-4" /></LinkButton>
           </div>
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-            {rooms.map((room) => <RoomCard compact key={room.id} room={room} />)}
-          </div>
+          {rooms.length ? (
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+              {rooms.map((room) => <RoomCard compact key={room.id} room={room} />)}
+            </div>
+          ) : <p className="rounded-[8px] border border-hotel-line bg-white p-6 text-center text-sm text-hotel-muted">Las habitaciones públicas no están disponibles en este momento.</p>}
         </div>
       </section>
 

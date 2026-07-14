@@ -1,12 +1,12 @@
-"use client";
+﻿"use client";
 
 import dynamic from "next/dynamic";
 
-import type { Destination } from "@/types/hotel";
+import type { PublicDestination } from "@/types/public-content";
 
 export const TourismMapDynamic = dynamic<{
   compact?: boolean;
-  destinations?: Destination[];
+  destinations?: PublicDestination[];
 }>(() => import("@/components/maps/tourism-map").then((mod) => mod.TourismMap), {
   ssr: false,
   loading: () => (

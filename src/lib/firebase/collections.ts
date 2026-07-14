@@ -1,4 +1,4 @@
-export const firestoreCollections = {
+﻿export const firestoreCollections = {
   rooms: "rooms",
   reservations: "reservations",
   guests: "guests",
@@ -8,6 +8,7 @@ export const firestoreCollections = {
   messages: "messages",
   users: "users",
   settings: "settings",
+  publicSettings: "public_settings",
   activityLogs: "activity_logs",
   blockedDates: "blocked_dates",
 } as const;

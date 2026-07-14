@@ -1,15 +1,16 @@
-import "server-only";
+﻿import "server-only";
 
 import { FieldValue } from "firebase-admin/firestore";
 
-import { destinations as localDestinations } from "@/data/destinations";
-import { galleryImages as localGalleryImages } from "@/data/gallery";
-import { rooms as localRooms } from "@/data/rooms";
-import { mainServices as localServices } from "@/data/services";
-import { getAdminDb } from "@/lib/firebase/admin";
 import { firestoreCollections } from "@/lib/firebase/collections";
 import { getDataMode } from "@/lib/firebase/mode";
-import type { Destination, PreferredContactMethod, Reservation, Room } from "@/types/hotel";
+import { getAdminDb } from "@/lib/firebase/admin";
+import { destinationsRepository } from "@/lib/repositories/destinations-repository";
+import { galleryRepository } from "@/lib/repositories/gallery-repository";
+import { roomsRepository } from "@/lib/repositories/rooms-repository";
+import { servicesRepository } from "@/lib/repositories/services-repository";
+import type { Destination, PreferredContactMethod, Reservation, Room, RoomCategory } from "@/types/hotel";
+import type { PublicGalleryImage, PublicRoom, PublicService } from "@/types/public-content";
 
 export interface ContactMessageInput { name: string; email: string; phone?: string; subject: string; message: string }
 export interface CreateReservationInput {
@@ -20,36 +21,75 @@ export interface CreateReservationInput {
 }
 export interface GalleryImage { id: string; title: string; category: string; image: string; active: boolean }
 
+function categoryFromSlug(slug: string): RoomCategory {
+  if (slug.includes("suite")) return "suite";
+  if (slug.includes("doble")) return "doble";
+  if (slug.includes("familiar")) return "familiar";
+  return "ejecutiva";
+}
+
+function toLegacyRoom(room: PublicRoom): Room {
+  return {
+    id: room.slug,
+    name: room.title,
+    category: categoryFromSlug(room.slug),
+    description: room.shortDescription || room.description,
+    price: room.price,
+    capacity: room.capacityAdults + room.capacityChildren,
+    beds: room.beds,
+    amenities: room.amenities,
+    image: room.coverImage,
+    status: "Disponible",
+    slug: room.slug,
+    roomType: room.title,
+    totalUnits: 1,
+    capacityAdults: room.capacityAdults,
+    capacityChildren: room.capacityChildren,
+    active: room.active,
+  };
+}
+
+function toLegacyDestination(destination: Awaited<ReturnType<typeof destinationsRepository.getAll>>[number]): Destination {
+  return {
+    id: destination.slug,
+    name: destination.title,
+    location: "Honduras",
+    distance: destination.estimatedDistance,
+    duration: destination.estimatedTime,
+    description: destination.description,
+    image: destination.image,
+    coordinates: {
+      lat: destination.latitude,
+      lng: destination.longitude,
+    },
+  };
+}
+
 export async function getRooms(): Promise<Room[]> {
-  if (getDataMode() === "demo") return localRooms;
-  const snapshot = await getAdminDb().collection(firestoreCollections.rooms).where("active", "==", true).get();
-  return snapshot.docs.map((item) => ({ id: item.id, ...item.data() }) as Room);
+  const rooms = await roomsRepository.getAll();
+  return rooms.map(toLegacyRoom);
 }
 export async function getDestinations(): Promise<Destination[]> {
-  if (getDataMode() === "demo") return localDestinations;
-  const snapshot = await getAdminDb().collection(firestoreCollections.destinations).where("active", "==", true).get();
-  return snapshot.docs.map((item) => ({ id: item.id, ...item.data() }) as Destination);
+  const destinations = await destinationsRepository.getAll();
+  return destinations.map(toLegacyDestination);
 }
 export async function getGalleryImages(): Promise<GalleryImage[]> {
-  if (getDataMode() === "demo") return localGalleryImages;
-  const snapshot = await getAdminDb().collection(firestoreCollections.gallery).where("active", "==", true).get();
-  return snapshot.docs.map((item) => ({ id: item.id, ...item.data() }) as GalleryImage);
+  const gallery = await galleryRepository.getAll();
+  return gallery.map((image: PublicGalleryImage) => ({
+    id: image.id,
+    title: image.title,
+    category: image.category,
+    image: image.image,
+    active: image.active,
+  }));
 }
-export async function getServices() {
-  if (getDataMode() === "demo") return localServices;
-  const snapshot = await getAdminDb().collection(firestoreCollections.services).where("active", "==", true).get();
-  return snapshot.docs.map((item) => {
-    const fallback = localServices.find((service) => service.id === item.id);
-    return fallback ? { ...fallback, ...item.data(), id: item.id, icon: fallback.icon } : null;
-  }).filter((item): item is (typeof localServices)[number] => item !== null);
+export async function getServices(): Promise<PublicService[]> {
+  return servicesRepository.getAll();
 }
 export async function getRecentMessages() {
   if (getDataMode() === "demo") return [];
   const snapshot = await getAdminDb().collection(firestoreCollections.messages).orderBy("createdAt", "desc").limit(20).get();
-  return snapshot.docs.map((item) => {
-    const fallback = localServices.find((service) => service.id === item.id);
-    return fallback ? { ...fallback, ...item.data(), id: item.id, icon: fallback.icon } : null;
-  }).filter((item): item is (typeof localServices)[number] => item !== null);
+  return snapshot.docs.map((item) => ({ id: item.id, ...item.data() }));
 }
 export async function createContactMessage(input: ContactMessageInput) {
   if (getDataMode() === "demo") return { id: `demo-message-${Date.now()}`, status: "demo" as const };

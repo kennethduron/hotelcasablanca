@@ -1,12 +1,14 @@
-import { ArrowRight } from "lucide-react";
+﻿import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 
 import { PageHero } from "@/components/layout/page-hero";
 import { SectionHeading } from "@/components/layout/section-heading";
 import { LinkButton } from "@/components/ui/button";
 import { RoomCard } from "@/components/ui/room-card";
-import { getRooms } from "@/lib/repositories/hotel-repository";
+import { roomsRepository } from "@/lib/repositories/rooms-repository";
 import { createPageMetadata } from "@/lib/metadata";
+
+export const revalidate = 300;
 
 export const metadata: Metadata = createPageMetadata({
   title: "Habitaciones",
@@ -17,7 +19,7 @@ export const metadata: Metadata = createPageMetadata({
 const filters = ["Todas", "Ejecutivas", "Dobles", "Suites", "Familiares"];
 
 export default async function RoomsPage() {
-  const rooms = await getRooms();
+  const rooms = await roomsRepository.getAll();
 
   return (
     <main>
@@ -35,9 +37,11 @@ export default async function RoomsPage() {
           <div className="my-9 flex flex-wrap justify-center gap-2">
             {filters.map((filter, index) => <span className={`rounded-[999px] px-6 py-2 text-xs font-bold uppercase ${index === 0 ? "bg-hotel-forest text-white" : "border border-hotel-line bg-white text-hotel-forest"}`} key={filter}>{filter}</span>)}
           </div>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {rooms.map((room) => <div className="scroll-mt-28" id={room.id} key={room.id}><RoomCard room={room} /></div>)}
-          </div>
+          {rooms.length ? (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              {rooms.map((room) => <div className="scroll-mt-28" id={room.slug} key={room.id}><RoomCard room={room} /></div>)}
+            </div>
+          ) : <p className="rounded-[8px] border border-hotel-line bg-hotel-ivory p-6 text-center text-sm text-hotel-muted">Las habitaciones públicas no están disponibles en este momento.</p>}
           <div className="mt-10 flex justify-center">
             <LinkButton href="#habitacion-ejecutiva" variant="outline">Ver todas las habitaciones <ArrowRight className="size-4" /></LinkButton>
           </div>

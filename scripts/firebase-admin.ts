@@ -1,9 +1,10 @@
 import { readFileSync } from "node:fs";
-import { cert, getApps, initializeApp } from "firebase-admin/app";
+import { applicationDefault, cert, getApps, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
-import { loadEnvConfig } from "@next/env";
+import nextEnv from "@next/env";
 
+const { loadEnvConfig } = nextEnv;
 loadEnvConfig(process.cwd());
 
 function readExpectedProjectId() {
@@ -16,7 +17,7 @@ function readExpectedProjectId() {
 export function assertHotelCasaBlancaProject() {
   const expectedProjectId = readExpectedProjectId();
   const projectId = process.env.FIREBASE_PROJECT_ID;
-  if (!expectedProjectId) throw new Error("No se encontró projectId en .firebaserc.");
+  if (!expectedProjectId) throw new Error("No se encontro projectId en .firebaserc.");
   if (!projectId) throw new Error("Falta FIREBASE_PROJECT_ID.");
   if (projectId !== expectedProjectId || projectId !== "hotelcasablanca-ce1b5") {
     throw new Error("El Project ID configurado no corresponde a Hotel Casa Blanca.");
@@ -25,11 +26,12 @@ export function assertHotelCasaBlancaProject() {
 }
 
 function getCredential() {
+  const projectId = assertHotelCasaBlancaProject();
+  if (process.env.GOOGLE_APPLICATION_CREDENTIALS) return applicationDefault();
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
   const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
-  if (!clientEmail) throw new Error("Falta FIREBASE_CLIENT_EMAIL.");
-  if (!privateKey) throw new Error("Falta FIREBASE_PRIVATE_KEY.");
-  return cert({ projectId: assertHotelCasaBlancaProject(), clientEmail, privateKey });
+  if (clientEmail && privateKey) return cert({ projectId, clientEmail, privateKey });
+  throw new Error("Falta configuracion de credenciales de Firebase Admin.");
 }
 
 function getAdminApp() {

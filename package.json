@@ -1,6 +1,7 @@
 {
     "name":  "hotelcasablanca-next",
     "version":  "0.1.0",
+    "type":  "module",
     "private":  true,
     "scripts":  {
                     "dev":  "next dev",
@@ -10,7 +11,7 @@
                     "typecheck":  "tsc --noEmit",
                     "test:rules":  "firebase emulators:exec --only firestore,storage \"node --test tests/firebase-rules.test.mjs\"",
                     "admin:set-role":  "node --experimental-strip-types scripts/set-admin-role.ts",
-                    "seed:public":  "node --experimental-strip-types scripts/seed-public-content.ts"
+                    "seed:public":  "node --no-deprecation --experimental-strip-types scripts/seed-public.ts"
                 },
     "dependencies":  {
                          "clsx":  "^2.1.1",

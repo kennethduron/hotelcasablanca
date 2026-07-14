@@ -1,4 +1,4 @@
-import { Clock, Mail, MapPin, MessageCircle, Phone, Send } from "lucide-react";
+﻿import { Clock, Mail, MapPin, MessageCircle, Phone, Send } from "lucide-react";
 import type { Metadata } from "next";
 
 import { createContactMessageAction } from "@/app/(public)/contacto/actions";
@@ -6,8 +6,12 @@ import { PageHero } from "@/components/layout/page-hero";
 import { SectionHeading } from "@/components/layout/section-heading";
 import { TourismMapDynamic } from "@/components/maps/tourism-map-dynamic";
 import { Button } from "@/components/ui/button";
+import { destinationsRepository } from "@/lib/repositories/destinations-repository";
+import { settingsRepository } from "@/lib/repositories/settings-repository";
 import { siteConfig } from "@/lib/site";
 import { createPageMetadata } from "@/lib/metadata";
+
+export const revalidate = 300;
 
 export const metadata: Metadata = createPageMetadata({
   title: "Contacto",
@@ -15,15 +19,19 @@ export const metadata: Metadata = createPageMetadata({
   path: "/contacto",
 });
 
-const contactItems = [
-  { label: "Ubicación", value: siteConfig.address, icon: MapPin },
-  { label: "Teléfono", value: siteConfig.phone, icon: Phone },
-  { label: "Correo electrónico", value: siteConfig.email, icon: Mail },
-  { label: "WhatsApp", value: siteConfig.whatsapp, icon: MessageCircle },
-  { label: "Horario de atención", value: "Lunes a Domingo · 7:00 AM - 10:00 PM", icon: Clock },
-];
+export default async function ContactPage() {
+  const [settings, destinations] = await Promise.all([
+    settingsRepository.get(),
+    destinationsRepository.getAll(),
+  ]);
+  const contactItems = [
+    { label: "Ubicación", value: settings?.address ?? siteConfig.address, icon: MapPin },
+    { label: "Teléfono", value: settings?.phone ?? siteConfig.phone, icon: Phone },
+    { label: "Correo electrónico", value: settings?.email ?? siteConfig.email, icon: Mail },
+    { label: "WhatsApp", value: settings?.whatsapp ?? siteConfig.whatsapp, icon: MessageCircle },
+    { label: "Horario de atención", value: `Check-in: ${settings?.checkInTime ?? siteConfig.checkIn} · Check-out: ${settings?.checkOutTime ?? siteConfig.checkOut}`, icon: Clock },
+  ];
 
-export default function ContactPage() {
   return (
     <main>
       <PageHero
@@ -53,7 +61,7 @@ export default function ContactPage() {
               <label className="mt-4 block text-sm font-medium text-hotel-ink">Mensaje<textarea className="mt-2 h-36 w-full rounded-[6px] border border-hotel-line bg-white p-3 outline-none transition focus:border-hotel-gold" name="message" placeholder="Escribe tu mensaje aquí..." /></label>
               <Button className="mt-5 w-full" type="submit" variant="forest">Enviar mensaje <Send className="size-4" /></Button>
             </form>
-            <TourismMapDynamic compact />
+            <div id="mapa"><TourismMapDynamic compact destinations={destinations} /></div>
           </div>
         </div>
       </section>
