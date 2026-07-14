@@ -174,7 +174,7 @@ function CalendarRange({ checkIn, checkOut, minDate, onSelect }: { checkIn: stri
 
 function MonthView({ month, checkIn, checkOut, minDate, onSelect }: { month: Date; checkIn: string; checkOut: string; minDate: string; onSelect: (date: string) => void }) {
   const days = buildMonth(month);
-  return <div><h4 className="mb-3 text-center text-sm font-bold capitalize text-white">{month.toLocaleDateString("es-HN", { month: "long", year: "numeric" })}</h4><div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold uppercase text-white/55">{["L", "M", "M", "J", "V", "S", "D"].map((day) => <span key={day}>{day}</span>)}</div><div className="mt-2 grid grid-cols-7 gap-1">{days.map((day, index) => day ? <DayButton checkIn={checkIn} checkOut={checkOut} date={day} disabled={day < minDate} key={day} onSelect={onSelect} /> : <span key={`blank-${index}`} />)}</div></div>;
+  return <div><h4 className="mb-3 text-center text-sm font-bold text-white">{month.toLocaleDateString("es-HN", { month: "long", year: "numeric" })}</h4><div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold uppercase text-white/55">{["L", "M", "M", "J", "V", "S", "D"].map((day) => <span key={day}>{day}</span>)}</div><div className="mt-2 grid grid-cols-7 gap-1">{days.map((day, index) => day ? <DayButton checkIn={checkIn} checkOut={checkOut} date={day} disabled={day < minDate} key={day} onSelect={onSelect} /> : <span key={`blank-${index}`} />)}</div></div>;
 }
 
 function DayButton({ date, checkIn, checkOut, disabled, onSelect }: { date: string; checkIn: string; checkOut: string; disabled: boolean; onSelect: (date: string) => void }) {
