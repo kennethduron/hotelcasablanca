@@ -3,6 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 
 import type { PublicService } from "@/types/public-content";
+import type { Locale } from "@/i18n/config";
+import type { Dictionary } from "@/i18n/get-dictionary";
+import { pathFor } from "@/i18n/routing";
 
 const iconMap = {
   "briefcase-business": BriefcaseBusiness,
@@ -14,7 +17,7 @@ const iconMap = {
   waves: Waves,
 } as const;
 
-export function ServiceCard({ service }: { service: PublicService }) {
+export function ServiceCard({ service, locale, dictionary }: { service: PublicService; locale: Locale; dictionary: Dictionary }) {
   const Icon = iconMap[service.icon as keyof typeof iconMap] ?? ShieldCheck;
 
   return (
@@ -28,8 +31,8 @@ export function ServiceCard({ service }: { service: PublicService }) {
         </div>
         <h3 className="hotel-serif text-2xl font-bold text-hotel-forest">{service.title}</h3>
         <p className="mt-2 min-h-14 text-sm leading-7 text-hotel-muted">{service.description}</p>
-        <Link className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-hotel-gold-700" href={`/servicios#${service.slug}`}>
-          Ver más <ArrowRight className="size-4" />
+        <Link className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-hotel-gold-700" href={`${pathFor(locale, "services")}#${service.slug}`}>
+          {dictionary.services.more} <ArrowRight className="size-4" />
         </Link>
       </div>
     </article>

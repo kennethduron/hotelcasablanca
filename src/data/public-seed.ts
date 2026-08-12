@@ -1,7 +1,8 @@
 ﻿import { publicImages } from "./public-images.ts";
 import type { PublicDestination, PublicGalleryImage, PublicRoom, PublicService, PublicSettings } from "../types/public-content.ts";
+import { destinationTranslations, roomTranslations, serviceTranslations } from "../i18n/content.ts";
 
-export const publicRooms: PublicRoom[] = [
+const publicRoomsBase: PublicRoom[] = [
   {
     id: "habitacion-ejecutiva",
     slug: "habitacion-ejecutiva",
@@ -80,7 +81,7 @@ export const publicRooms: PublicRoom[] = [
   },
 ];
 
-export const publicServices: PublicService[] = [
+const publicServicesBase: PublicService[] = [
   {
     id: "restaurante",
     slug: "restaurante",
@@ -149,7 +150,7 @@ export const publicServices: PublicService[] = [
   },
 ];
 
-export const publicDestinations: PublicDestination[] = [
+const publicDestinationsBase: PublicDestination[] = [
   {
     id: "cataratas-pulhapanzak",
     slug: "cataratas-pulhapanzak",
@@ -208,7 +209,7 @@ export const publicDestinations: PublicDestination[] = [
   },
 ];
 
-export const publicGallery: PublicGalleryImage[] = [
+const publicGalleryBase: PublicGalleryImage[] = [
   { id: "fachada", category: "hotel", title: "Fachada del hotel", image: publicImages.gallery.facade, active: true, order: 10 },
   { id: "lobby", category: "hotel", title: "Lobby principal", image: publicImages.gallery.lobby, active: true, order: 20 },
   { id: "habitacion", category: "habitaciones", title: "Habitación preparada", image: publicImages.gallery.room, active: true, order: 30 },
@@ -217,7 +218,7 @@ export const publicGallery: PublicGalleryImage[] = [
   { id: "piscina", category: "servicios", title: "Piscina", image: publicImages.gallery.pool, active: true, order: 60 },
 ];
 
-export const publicSettings: PublicSettings = {
+const publicSettingsBase: PublicSettings = {
   id: "main",
   hotelName: "Hotel Casa Blanca",
   slogan: "Naturaleza, confort y hospitalidad en perfecta armonía.",
@@ -231,5 +232,20 @@ export const publicSettings: PublicSettings = {
   checkInTime: "1:00 PM",
   checkOutTime: "12:00 PM",
 };
+
+const galleryTranslations: Record<string, { title: { es: string; en: string }; category: { es: string; en: string } }> = {
+  fachada: { title: { es: "Fachada del hotel", en: "Hotel facade" }, category: { es: "Hotel", en: "Hotel" } },
+  lobby: { title: { es: "Lobby principal", en: "Main lobby" }, category: { es: "Áreas comunes", en: "Common Areas" } },
+  habitacion: { title: { es: "Habitación preparada", en: "Guest room" }, category: { es: "Habitaciones", en: "Rooms" } },
+  jardin: { title: { es: "Jardines naturales", en: "Natural gardens" }, category: { es: "Áreas comunes", en: "Common Areas" } },
+  restaurante: { title: { es: "Restaurante", en: "Restaurant" }, category: { es: "Gastronomía", en: "Dining" } },
+  piscina: { title: { es: "Piscina", en: "Pool" }, category: { es: "Servicios", en: "Services" } },
+};
+
+export const publicRooms: PublicRoom[] = publicRoomsBase.map((room) => ({ ...room, titleI18n: roomTranslations[room.slug]?.title, shortDescriptionI18n: roomTranslations[room.slug]?.shortDescription, descriptionI18n: roomTranslations[room.slug]?.description, amenitiesI18n: roomTranslations[room.slug]?.amenities }));
+export const publicServices: PublicService[] = publicServicesBase.map((service) => ({ ...service, titleI18n: serviceTranslations[service.slug]?.title, descriptionI18n: serviceTranslations[service.slug]?.description }));
+export const publicDestinations: PublicDestination[] = publicDestinationsBase.map((destination) => ({ ...destination, titleI18n: destinationTranslations[destination.slug]?.title, descriptionI18n: destinationTranslations[destination.slug]?.description, estimatedTimeI18n: destinationTranslations[destination.slug]?.estimatedTime }));
+export const publicGallery: PublicGalleryImage[] = publicGalleryBase.map((image) => ({ ...image, titleI18n: galleryTranslations[image.id]?.title, categoryI18n: galleryTranslations[image.id]?.category }));
+export const publicSettings: PublicSettings = { ...publicSettingsBase, sloganI18n: { es: publicSettingsBase.slogan, en: "Nature, comfort, and hospitality in perfect harmony." } };
 
 

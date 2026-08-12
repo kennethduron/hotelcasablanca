@@ -10,6 +10,8 @@ import { siteConfig } from "@/lib/site";
 import { getDrivingRoute, type RouteResult } from "@/lib/routing-service";
 import { cn } from "@/lib/utils";
 import type { PublicDestination } from "@/types/public-content";
+import type { Locale } from "@/i18n/config";
+import type { Dictionary } from "@/i18n/get-dictionary";
 
 const hotelPosition: [number, number] = [siteConfig.coordinates.lat, siteConfig.coordinates.lng];
 
@@ -33,15 +35,16 @@ function createDestinationIcon() {
   });
 }
 
-function categoryFor(destination: PublicDestination) {
-  if (destination.slug.includes("tela")) return "Playa";
-  if (destination.slug.includes("jardin") || destination.slug.includes("lancetilla")) return "Naturaleza";
-  if (destination.slug.includes("cataratas")) return "Aventura";
-  if (destination.slug.includes("san-pedro")) return "Ciudad";
-  return "Destino turístico";
+function categoryFor(destination: PublicDestination, labels: Dictionary["map"]["categories"]) {
+  if (destination.slug.includes("tela")) return labels.beach;
+  if (destination.slug.includes("jardin") || destination.slug.includes("lancetilla")) return labels.nature;
+  if (destination.slug.includes("cataratas")) return labels.adventure;
+  if (destination.slug.includes("san-pedro")) return labels.city;
+  return labels.destination;
 }
 
-export function TourismMap({ compact = false, destinations = [] }: { compact?: boolean; destinations?: PublicDestination[] }) {
+export function TourismMap({ compact = false, destinations = [], dictionary }: { compact?: boolean; destinations?: PublicDestination[]; locale: Locale; dictionary: Dictionary }) {
+  const labels = dictionary.map;
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [routeState, setRouteState] = useState<{ key: string; route: RouteResult | null; error: string }>({ key: "", route: null, error: "" });
   const [paused, setPaused] = useState(false);
@@ -90,10 +93,10 @@ export function TourismMap({ compact = false, destinations = [] }: { compact?: b
       .then((result) => setRouteState({ key: selected.slug, route: result, error: "" }))
       .catch((error: unknown) => {
         if (error instanceof DOMException && error.name === "AbortError") return;
-        setRouteState({ key: selected.slug, route: null, error: "La ruta no está disponible temporalmente." });
+        setRouteState({ key: selected.slug, route: null, error: labels.routeUnavailable });
       });
     return () => controller.abort();
-  }, [selected]);
+  }, [labels.routeUnavailable, selected]);
 
   const pauseTemporarily = useCallback(() => {
     setPaused(true);
@@ -108,14 +111,14 @@ export function TourismMap({ compact = false, destinations = [] }: { compact?: b
   }, [destinations.length, pauseTemporarily]);
 
   if (!selected) {
-    return <div className="grid h-[420px] place-items-center rounded-[8px] border border-hotel-line bg-hotel-ivory text-sm text-hotel-muted">No hay destinos públicos disponibles en este momento.</div>;
+    return <div className="grid h-[420px] place-items-center rounded-[8px] border border-hotel-line bg-hotel-ivory text-sm text-hotel-muted">{labels.noDestinations}</div>;
   }
 
   const routeUrl = `https://www.google.com/maps/dir/?api=1&origin=${hotelPosition.join(",")}&destination=${selected.latitude},${selected.longitude}`;
 
   return (
     <section
-      aria-label="Mapa turístico interactivo"
+      aria-label={labels.mapLabel}
       className={cn("overflow-hidden rounded-[10px] bg-hotel-forest-900 text-white shadow-[0_28px_80px_rgb(0_31_22_/_0.2)]", compact ? "p-2.5" : "p-3")}
       onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setPaused(false); }}
       onFocus={() => setPaused(true)}
@@ -133,18 +136,18 @@ export function TourismMap({ compact = false, destinations = [] }: { compact?: b
     >
       <div className="flex items-center justify-between gap-3 px-2 py-2.5">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-hotel-gold">Explora cerca</p>
-          <h3 className={cn("hotel-serif font-bold", compact ? "text-xl sm:text-2xl" : "text-3xl")}>{compact ? "Cerca del hotel" : "Destinos desde el hotel"}</h3>
+          <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-hotel-gold">{labels.explore}</p>
+          <h3 className={cn("hotel-serif font-bold", compact ? "text-xl sm:text-2xl" : "text-3xl")}>{compact ? labels.nearby : labels.destinations}</h3>
         </div>
         <div className="flex shrink-0 gap-2">
-          <button aria-label="Destino anterior" className="grid size-11 place-items-center rounded-full border border-white/25 bg-white/10 text-white hover:bg-hotel-gold hover:text-hotel-forest" onClick={() => move(-1)} type="button"><ArrowLeft aria-hidden className="size-4" /></button>
-          <button aria-label="Destino siguiente" className="grid size-11 place-items-center rounded-full border border-white/25 bg-white/10 text-white hover:bg-hotel-gold hover:text-hotel-forest" onClick={() => move(1)} type="button"><ArrowRight aria-hidden className="size-4" /></button>
+          <button aria-label={labels.previous} className="grid size-11 place-items-center rounded-full border border-white/25 bg-white/10 text-white hover:bg-hotel-gold hover:text-hotel-forest" onClick={() => move(-1)} type="button"><ArrowLeft aria-hidden className="size-4" /></button>
+          <button aria-label={labels.next} className="grid size-11 place-items-center rounded-full border border-white/25 bg-white/10 text-white hover:bg-hotel-gold hover:text-hotel-forest" onClick={() => move(1)} type="button"><ArrowRight aria-hidden className="size-4" /></button>
         </div>
       </div>
 
       <div className={cn("grid gap-3", compact ? "" : "min-[1024px]:grid-cols-[minmax(210px,0.72fr)_minmax(0,1.65fr)]")}>
         <div className="min-w-0 rounded-[8px] border border-white/10 bg-white/7 p-2.5">
-          <div aria-label="Carrusel de destinos" aria-live="off" className={cn("flex gap-2.5 overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden", compact ? "" : "min-[1024px]:flex-col min-[1024px]:overflow-visible")} data-draggable="true" style={{ cursor: dragging ? "grabbing" : undefined, touchAction: "pan-y" }}>
+          <div aria-label={labels.carousel} aria-live="off" className={cn("flex gap-2.5 overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden", compact ? "" : "min-[1024px]:flex-col min-[1024px]:overflow-visible")} data-draggable="true" style={{ cursor: dragging ? "grabbing" : undefined, touchAction: "pan-y" }}>
             {visibleDestinations.map(({ destination, index, active }) => (
               <button
                 aria-current={active ? "true" : undefined}
@@ -156,7 +159,7 @@ export function TourismMap({ compact = false, destinations = [] }: { compact?: b
                 <Image alt={destination.title} className="object-cover transition duration-500 group-hover:scale-105" fill sizes={compact ? "(max-width: 1023px) 82vw, 360px" : "(max-width: 1023px) 84vw, 300px"} src={destination.image} />
                 <span className="absolute inset-0 bg-gradient-to-t from-black/88 via-black/22 to-transparent" />
                 <span className="absolute inset-x-0 bottom-0 block p-3.5">
-                  <span className="mb-1.5 inline-flex rounded-full bg-hotel-gold px-2.5 py-1 text-[9px] font-bold uppercase text-hotel-forest">{categoryFor(destination)}</span>
+                  <span className="mb-1.5 inline-flex rounded-full bg-hotel-gold px-2.5 py-1 text-[9px] font-bold uppercase text-hotel-forest">{categoryFor(destination, labels.categories)}</span>
                   <span className={cn("block hotel-serif font-bold text-white", compact ? "line-clamp-2 text-lg" : active ? "line-clamp-2 text-xl" : "line-clamp-2 text-lg")}>{destination.title}</span>
                   <span className="mt-1 flex items-center gap-2 text-[11px] text-white/88"><Clock aria-hidden className="size-3" />{destination.estimatedTime}<span>{destination.estimatedDistance}</span></span>
                 </span>
@@ -166,7 +169,7 @@ export function TourismMap({ compact = false, destinations = [] }: { compact?: b
         </div>
 
         <div className="min-w-0">
-          <div aria-label={`Mapa con la ruta desde Hotel Casa Blanca hasta ${selected.title}`} className={cn("overflow-hidden rounded-[8px] border border-white/10 bg-hotel-ivory", compact ? "h-[300px] xl:h-[240px]" : "h-[clamp(380px,42vw,500px)] md:min-h-[420px] min-[1024px]:h-[430px] min-[1280px]:h-[450px]")} role="region">
+          <div aria-label={`${labels.mapLabel} ${selected.title}`} className={cn("overflow-hidden rounded-[8px] border border-white/10 bg-hotel-ivory", compact ? "h-[300px] xl:h-[240px]" : "h-[clamp(380px,42vw,500px)] md:min-h-[420px] min-[1024px]:h-[430px] min-[1280px]:h-[450px]")} role="region">
             <MapContainer center={[selected.latitude, selected.longitude]} className="h-full w-full" scrollWheelZoom={false} zoom={9}>
               <MapSync destination={selected} route={route} />
               <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
@@ -179,19 +182,19 @@ export function TourismMap({ compact = false, destinations = [] }: { compact?: b
           <div aria-live="polite" className={cn("mt-3 rounded-[8px] border border-white/10 bg-hotel-ivory text-hotel-forest shadow-hotel-card", compact ? "p-3" : "p-4")}>
             <div className={cn("grid gap-3", compact ? "sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end" : "sm:grid-cols-[1fr_auto] sm:items-end min-[1024px]:!grid-cols-[minmax(0,1fr)_auto_auto]")}>
               <div className="min-w-0">
-                {!compact ? <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-hotel-gold-700">{categoryFor(selected)}</p> : null}
+                {!compact ? <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-hotel-gold-700">{categoryFor(selected, labels.categories)}</p> : null}
                 <h3 className={cn("hotel-serif mt-0.5 font-bold", compact ? "line-clamp-2 text-xl" : "text-3xl")}>{selected.title}</h3>
                 {!compact ? <p className="mt-1 line-clamp-1 text-sm leading-6 text-hotel-muted">{selected.description}</p> : null}
               </div>
               <div className={cn("grid grid-cols-2 gap-2 text-xs", !compact && "sm:min-w-64")}>
-                <span className="rounded-[6px] bg-hotel-sage/70 p-2.5">Distancia<br /><strong>{route ? `${route.distanceKm.toFixed(1)} km` : selected.estimatedDistance}</strong></span>
-                <span className="rounded-[6px] bg-hotel-sage/70 p-2.5">Tiempo estimado<br /><strong>{route ? `${Math.round(route.durationMinutes)} min` : selected.estimatedTime}</strong></span>
+                <span className="rounded-[6px] bg-hotel-sage/70 p-2.5">{labels.distance}<br /><strong>{route ? `${route.distanceKm.toFixed(1)} km` : selected.estimatedDistance}</strong></span>
+                <span className="rounded-[6px] bg-hotel-sage/70 p-2.5">{labels.estimatedTime}<br /><strong>{route ? `${Math.round(route.durationMinutes)} min` : selected.estimatedTime}</strong></span>
               </div>
               <a className={cn("inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-[6px] bg-hotel-forest px-4 text-xs font-bold uppercase text-white transition hover:bg-hotel-forest-800", compact ? "sm:col-span-2" : "min-[1024px]:w-auto")} href={routeUrl} rel="noopener noreferrer" target="_blank">
-                Ver ruta <Navigation aria-hidden className="size-4" />
+                {labels.route} <Navigation aria-hidden className="size-4" />
               </a>
             </div>
-            {routeLoading ? <p className="mt-2 text-xs text-hotel-muted">Calculando ruta por carretera...</p> : null}
+            {routeLoading ? <p className="mt-2 text-xs text-hotel-muted">{labels.calculating}</p> : null}
             {routeError ? <p className="mt-2 text-xs font-semibold text-red-700">{routeError}</p> : null}
           </div>
         </div>

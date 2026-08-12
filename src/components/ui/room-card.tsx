@@ -3,8 +3,12 @@ import Image from "next/image";
 
 import { LinkButton } from "@/components/ui/button";
 import type { PublicRoom } from "@/types/public-content";
+import type { Locale } from "@/i18n/config";
+import type { Dictionary } from "@/i18n/get-dictionary";
+import { formatCurrency } from "@/i18n/format";
+import { pathFor } from "@/i18n/routing";
 
-export function RoomCard({ room }: { room: PublicRoom; compact?: boolean }) {
+export function RoomCard({ room, locale, dictionary }: { room: PublicRoom; compact?: boolean; locale: Locale; dictionary: Dictionary }) {
   const capacity = room.capacityAdults + room.capacityChildren;
 
   return (
@@ -23,12 +27,12 @@ export function RoomCard({ room }: { room: PublicRoom; compact?: boolean }) {
         <div className="my-3 h-px w-12 bg-hotel-gold" />
         <p className="min-h-14 text-sm leading-7 text-hotel-muted">{room.shortDescription}</p>
         <div className="mt-5 flex items-end gap-1 text-hotel-forest">
-          <span className="hotel-serif text-3xl font-bold">L{room.price.toLocaleString("es-HN")}</span>
-          <span className="pb-1 text-sm text-hotel-muted">/ noche</span>
+          <span className="hotel-serif text-3xl font-bold">{formatCurrency(room.price, locale)}</span>
+          <span className="pb-1 text-sm text-hotel-muted">/ {dictionary.rooms.perNight}</span>
         </div>
         <div className="mt-auto grid grid-cols-2 gap-2 pt-5">
-          <LinkButton href={`/habitaciones#${room.slug}`} variant="outlineDark">Ver detalles</LinkButton>
-          <LinkButton href={`/reservar?room=${room.slug}`} variant="forest">Reservar <ArrowRight aria-hidden className="size-4" /></LinkButton>
+          <LinkButton href={`${pathFor(locale, "rooms")}#${room.slug}`} variant="outlineDark">{dictionary.rooms.details}</LinkButton>
+          <LinkButton href={`${pathFor(locale, "book")}?room=${room.slug}`} variant="forest">{dictionary.rooms.book} <ArrowRight aria-hidden className="size-4" /></LinkButton>
         </div>
       </div>
     </article>

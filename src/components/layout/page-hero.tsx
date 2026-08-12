@@ -10,6 +10,9 @@ import { WeatherTimeCard } from "@/components/layout/weather-time-card";
 import { LinkButton } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { PublicRoom } from "@/types/public-content";
+import type { Locale } from "@/i18n/config";
+import type { Dictionary } from "@/i18n/get-dictionary";
+import { pathFor } from "@/i18n/routing";
 
 interface PageHeroProps {
   eyebrow: string;
@@ -22,9 +25,11 @@ interface PageHeroProps {
   bookingVariant?: "floating" | "below";
   active?: string;
   bookingRooms?: Pick<PublicRoom, "slug" | "title">[];
+  locale: Locale;
+  dictionary: Dictionary;
 }
 
-export function PageHero({ eyebrow, title, description, image, images, showWeather = true, showActions = false, bookingVariant = "floating", active, bookingRooms = [] }: PageHeroProps) {
+export function PageHero({ eyebrow, title, description, image, images, showWeather = true, showActions = false, bookingVariant = "floating", active, bookingRooms = [], locale, dictionary }: PageHeroProps) {
   const slides = images?.length ? images.slice(0, 4) : image ? [image] : [];
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -76,14 +81,14 @@ export function PageHero({ eyebrow, title, description, image, images, showWeath
             <p className="mb-5 text-xs font-bold uppercase tracking-[0.32em] text-hotel-gold">{eyebrow}</p>
             <h1 className="hotel-serif max-w-4xl text-5xl font-bold leading-[0.96] sm:text-6xl md:text-7xl xl:text-8xl">{title}</h1>
             <p className="mt-6 max-w-2xl text-base leading-8 text-white/92 md:text-xl">{description}</p>
-            {active ? <div className="mt-7 flex items-center gap-2 text-sm text-white/85"><Link href="/">Inicio</Link><ChevronRight className="size-4 text-hotel-gold" /><span className="text-hotel-gold">{active}</span></div> : null}
-            {showActions ? <div className="mt-9 flex flex-col gap-3 sm:flex-row"><LinkButton href="/reservar" variant="gold">Reservar ahora</LinkButton><LinkButton href="/habitaciones" variant="outlineLight">Conoce más</LinkButton></div> : null}
+            {active ? <div className="mt-7 flex items-center gap-2 text-sm text-white/85"><Link href={pathFor(locale, "home")}>{dictionary.navbar.home}</Link><ChevronRight className="size-4 text-hotel-gold" /><span className="text-hotel-gold">{active}</span></div> : null}
+            {showActions ? <div className="mt-9 flex flex-col gap-3 sm:flex-row"><LinkButton href={pathFor(locale, "book")} variant="gold">{dictionary.common.bookNow}</LinkButton><LinkButton href={pathFor(locale, "rooms")} variant="outlineLight">{dictionary.common.learnMore}</LinkButton></div> : null}
           </div>
-          {showWeather ? <WeatherTimeCard /> : null}
+          {showWeather ? <WeatherTimeCard dictionary={dictionary} locale={locale} /> : null}
         </div>
-        {slides.length > 1 ? <div className="absolute bottom-24 left-1/2 z-20 flex -translate-x-1/2 gap-2 md:bottom-28">{slides.map((_, index) => <button aria-label={`Mostrar imagen ${index + 1}`} aria-current={index === current ? "true" : undefined} className={cn("min-h-11 min-w-11 rounded-full border border-transparent p-4 transition-all focus-visible:border-hotel-gold", index === current ? "after:block after:h-2.5 after:w-9 after:rounded-full after:bg-hotel-gold" : "after:block after:size-2.5 after:rounded-full after:border after:border-white/80 after:bg-black/30 hover:after:bg-white/80")} key={index} onClick={() => setCurrent(index)} type="button" />)}</div> : null}
+        {slides.length > 1 ? <div className="absolute bottom-24 left-1/2 z-20 flex -translate-x-1/2 gap-2 md:bottom-28">{slides.map((_, index) => <button aria-label={`${dictionary.accessibility.showImage} ${index + 1}`} aria-current={index === current ? "true" : undefined} className={cn("min-h-11 min-w-11 rounded-full border border-transparent p-4 transition-all focus-visible:border-hotel-gold", index === current ? "after:block after:h-2.5 after:w-9 after:rounded-full after:bg-hotel-gold" : "after:block after:size-2.5 after:rounded-full after:border after:border-white/80 after:bg-black/30 hover:after:bg-white/80")} key={index} onClick={() => setCurrent(index)} type="button" />)}</div> : null}
       </div>
-      <div className={cn(bookingVariant === "below" && "pt-16")}><BookingBar rooms={bookingRooms} /></div>
+      <div className={cn(bookingVariant === "below" && "pt-16")}><BookingBar dictionary={dictionary} locale={locale} rooms={bookingRooms} /></div>
     </section>
   );
 }

@@ -60,6 +60,7 @@ export interface Destination {
 
 export interface Reservation {
   id: string;
+  locale?: "es" | "en";
   guestName: string;
   guestEmail: string;
   guestPhone: string;

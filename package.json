@@ -11,7 +11,8 @@
                     "typecheck":  "tsc --noEmit",
                     "test:rules":  "firebase emulators:exec --only firestore,storage \"node --test tests/firebase-rules.test.mjs\"",
                     "admin:set-role":  "node --experimental-strip-types scripts/set-admin-role.ts",
-                    "seed:public":  "node --no-deprecation --experimental-strip-types scripts/seed-public.ts"
+                    "seed:public":  "node --no-deprecation --experimental-strip-types scripts/seed-public.ts",
+                    "migrate:public-i18n":  "node --no-deprecation --experimental-strip-types scripts/migrate-public-i18n.ts"
                 },
     "dependencies":  {
                          "clsx":  "^2.1.1",

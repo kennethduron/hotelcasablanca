@@ -9,6 +9,8 @@ import { checkAvailability, type AvailabilityRequest } from "@/lib/availability-
 import { createReservation, getRooms } from "@/lib/repositories/hotel-repository";
 import type { PreferredContactMethod } from "@/types/hotel";
 import { enforceRateLimit } from "@/lib/security/rate-limit";
+import { defaultLocale, hasLocale, type Locale } from "@/i18n/config";
+import { pathFor } from "@/i18n/routing";
 
 const availabilityRequestSchema = z.object({
   roomId: z.string().min(1).max(120),
@@ -18,6 +20,7 @@ const availabilityRequestSchema = z.object({
   children: z.number().int().min(0).max(8),
 });
 const reservationSchema = z.object({
+  locale: z.enum(["es", "en"]).default("es"),
   checkIn: z.iso.date(),
   checkOut: z.iso.date(),
   roomId: z.string().min(1).max(120),
@@ -52,6 +55,7 @@ export async function createReservationAction(formData: FormData) {
   const ip = requestHeaders.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
   enforceRateLimit(`reservation:${ip}`, 3, 15 * 60 * 1000);
   const parsed = reservationSchema.safeParse({
+    locale: formData.get("locale") || defaultLocale,
     checkIn: formData.get("checkIn"),
     checkOut: formData.get("checkOut"),
     roomId: formData.get("roomId"),
@@ -71,18 +75,20 @@ export async function createReservationAction(formData: FormData) {
   });
 
   if (!parsed.success) {
-    redirect("/reservar?error=datos");
+    const requestedLocale = String(formData.get("locale") ?? defaultLocale);
+    const locale: Locale = hasLocale(requestedLocale) ? requestedLocale : defaultLocale;
+    redirect(`${pathFor(locale, "book")}?error=datos`);
   }
 
   const data = parsed.data;
-  const rooms = await getRooms();
+  const rooms = await getRooms(data.locale);
   const room = rooms.find((item) => item.id === data.roomId);
   const nights = getNights(data.checkIn, data.checkOut);
 
   const availability = room ? await checkAvailability({ roomId: room.id, checkIn: data.checkIn, checkOut: data.checkOut, adults: data.adults, children: data.children }) : null;
 
   if (!room || nights < 1 || !availability?.available) {
-    redirect("/reservar?error=disponibilidad");
+    redirect(`${pathFor(data.locale, "book")}?error=disponibilidad`);
   }
 
   const subtotal = room.price * nights;
@@ -90,6 +96,7 @@ export async function createReservationAction(formData: FormData) {
   const total = subtotal + taxes;
 
   const { reservation } = await createReservation({
+    locale: data.locale,
     guestName: data.guestName,
     guestEmail: data.guestEmail,
     guestPhone: data.guestPhone,
@@ -116,5 +123,5 @@ export async function createReservationAction(formData: FormData) {
 
   await sendReservationReceivedEmail(reservation);
 
-  redirect(`/reservar/confirmacion?id=${encodeURIComponent(reservation.id)}`);
+  redirect(`${pathFor(data.locale, "confirmation")}?id=${encodeURIComponent(reservation.id)}`);
 }

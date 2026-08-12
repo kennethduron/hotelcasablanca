@@ -11,9 +11,11 @@ import { roomsRepository } from "@/lib/repositories/rooms-repository";
 import { servicesRepository } from "@/lib/repositories/services-repository";
 import type { Destination, PreferredContactMethod, Reservation, Room, RoomCategory } from "@/types/hotel";
 import type { PublicGalleryImage, PublicRoom, PublicService } from "@/types/public-content";
+import type { Locale } from "@/i18n/config";
 
 export interface ContactMessageInput { name: string; email: string; phone?: string; subject: string; message: string }
 export interface CreateReservationInput {
+  locale: Locale;
   guestName: string; guestEmail: string; guestPhone: string; guestCountry: string; guestDocumentNumber: string;
   guestDocumentType: string; guestAddress?: string; roomId: string; roomName: string; checkIn: string; checkOut: string;
   adults: number; children: number; nights: number; plan: string; ratePerNight: number; taxes: number; notes?: string;
@@ -65,8 +67,8 @@ function toLegacyDestination(destination: Awaited<ReturnType<typeof destinations
   };
 }
 
-export async function getRooms(): Promise<Room[]> {
-  const rooms = await roomsRepository.getAll();
+export async function getRooms(locale: Locale = "es"): Promise<Room[]> {
+  const rooms = await roomsRepository.getAll(locale);
   return rooms.map(toLegacyRoom);
 }
 export async function getDestinations(): Promise<Destination[]> {
