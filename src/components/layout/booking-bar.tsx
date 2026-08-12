@@ -1,6 +1,6 @@
 "use client";
 
-import { BedDouble, CalendarDays, Search, UserRound } from "lucide-react";
+import { BedDouble, CalendarDays, Minus, Plus, Search, UserRound } from "lucide-react";
 import { useMemo, useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -55,12 +55,8 @@ export function BookingBar({ rooms = [] }: { rooms?: Pick<PublicRoom, "slug" | "
         <BarField icon={CalendarDays} label="Check-out">
           <input aria-label="Check-out" className="booking-input" min={tomorrowFrom(checkIn)} onChange={(event) => setCheckOut(event.target.value)} type="date" value={checkOut} />
         </BarField>
-        <BarField icon={UserRound} label="Adultos">
-          <input aria-label="Adultos" className="booking-input" min={1} onChange={(event) => setAdults(Math.max(1, Number(event.target.value)))} type="number" value={adults} />
-        </BarField>
-        <BarField icon={UserRound} label="Niños">
-          <input aria-label="Niños" className="booking-input" min={0} onChange={(event) => setChildren(Math.max(0, Number(event.target.value)))} type="number" value={children} />
-        </BarField>
+        <BarStepper icon={UserRound} label="Adultos" min={1} max={10} value={adults} onChange={setAdults} />
+        <BarStepper icon={UserRound} label="Niños" min={0} max={6} value={children} onChange={setChildren} />
         <BarField icon={BedDouble} label="Habitación">
           <select aria-label="Habitación" className="booking-input" onChange={(event) => setRoom(event.target.value)} value={room}>
             {roomOptions.map((option) => <option key={option.slug} value={option.slug}>{option.title}</option>)}
@@ -84,5 +80,21 @@ function BarField({ icon: Icon, label, children }: { icon: typeof CalendarDays; 
         {children}
       </span>
     </label>
+  );
+}
+
+function BarStepper({ icon: Icon, label, min, max, value, onChange }: { icon: typeof UserRound; label: string; min: number; max: number; value: number; onChange: (value: number) => void }) {
+  return (
+    <div className="flex min-h-16 items-center gap-3 rounded-[8px] border border-hotel-line bg-white px-3 py-2 transition focus-within:border-hotel-gold focus-within:shadow-hotel-soft">
+      <Icon aria-hidden className="size-5 shrink-0 text-hotel-gold-700" />
+      <div className="min-w-0 flex-1">
+        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-hotel-gold-700">{label}</p>
+        <div className="mt-1 flex items-center justify-between gap-2">
+          <button aria-label={`Reducir ${label}`} className="grid size-8 shrink-0 place-items-center rounded-full border border-hotel-line bg-hotel-ivory text-hotel-forest hover:border-hotel-gold hover:bg-hotel-sage disabled:opacity-45" disabled={value <= min} onClick={() => onChange(Math.max(min, value - 1))} type="button"><Minus aria-hidden className="size-3.5" /></button>
+          <output aria-label={label} className="min-w-5 text-center text-sm font-bold text-hotel-ink">{value}</output>
+          <button aria-label={`Aumentar ${label}`} className="grid size-8 shrink-0 place-items-center rounded-full bg-hotel-forest text-white hover:bg-hotel-forest-800 disabled:opacity-45" disabled={value >= max} onClick={() => onChange(Math.min(max, value + 1))} type="button"><Plus aria-hidden className="size-3.5" /></button>
+        </div>
+      </div>
+    </div>
   );
 }

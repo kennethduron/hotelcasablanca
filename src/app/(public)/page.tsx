@@ -36,7 +36,7 @@ export default async function HomePage() {
         eyebrow="Exclusividad & Naturaleza"
         title="Su oasis de descanso en El Progreso, Yoro"
         description={settings?.slogan ?? "Naturaleza, confort y hospitalidad en perfecta armonía."}
-        images={["https://images.unsplash.com/photo-1601919051950-bb9f3ffb3fee?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1496417263034-38ec4f0b665a?auto=format&fit=crop&w=2200&q=88"]}
+        images={["https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=2200&q=88", "https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=2200&q=88"]}
         showActions
         bookingRooms={rooms}
       />
@@ -59,15 +59,15 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="py-16">
-        <div className="hotel-container grid gap-10 lg:grid-cols-[0.65fr_1.35fr] lg:items-center">
+      <section className="py-14 md:py-16" id="turismo">
+        <div className="hotel-container grid gap-9 lg:grid-cols-[0.55fr_1.45fr] lg:items-start xl:grid-cols-[0.62fr_1.38fr]">
           <div>
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.24em] text-hotel-gold-700">Descubre Honduras</p>
             <h2 className="hotel-serif text-4xl font-bold leading-tight text-hotel-forest md:text-5xl">Explora destinos cerca de nosotros</h2>
             <p className="mt-5 leading-8 text-hotel-muted">Conéctate con los principales atractivos turísticos de Honduras. Selecciona un destino y conoce la distancia y el tiempo estimado desde el hotel.</p>
-            <LinkButton className="mt-7" href="/entorno" variant="forest">Explorar todos los destinos <ArrowRight className="size-4" /></LinkButton>
+            <LinkButton className="mt-7" href="/entorno#turismo" variant="forest">Explorar todos los destinos <ArrowRight className="size-4" /></LinkButton>
           </div>
-          <TourismMapDynamic compact destinations={destinations} />
+          <TourismMapDynamic destinations={destinations} />
         </div>
       </section>
 

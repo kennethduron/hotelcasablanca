@@ -1,4 +1,3 @@
-import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 
 import { PageHero } from "@/components/layout/page-hero";
@@ -16,7 +15,13 @@ export const metadata: Metadata = createPageMetadata({
   path: "/habitaciones",
 });
 
-const filters = ["Todas", "Ejecutivas", "Dobles", "Suites", "Familiares"];
+const filters = [
+  { label: "Todas", href: "#habitaciones" },
+  { label: "Ejecutivas", href: "#habitacion-ejecutiva" },
+  { label: "Dobles", href: "#habitacion-doble" },
+  { label: "Suites", href: "#suite-premium" },
+  { label: "Familiares", href: "#suite-familiar" },
+];
 
 export default async function RoomsPage() {
   const rooms = await roomsRepository.getAll();
@@ -32,20 +37,17 @@ export default async function RoomsPage() {
         showWeather={false}
         bookingRooms={rooms}
       />
-      <section className="py-16">
+      <section className="scroll-mt-28 py-16" id="habitaciones">
         <div className="hotel-container">
           <SectionHeading eyebrow="Nuestras habitaciones" title="Elija su espacio ideal" />
-          <div className="my-9 flex flex-wrap justify-center gap-2">
-            {filters.map((filter, index) => <span className={`rounded-[999px] px-6 py-2 text-xs font-bold uppercase ${index === 0 ? "bg-hotel-forest text-white" : "border border-hotel-line bg-white text-hotel-forest"}`} key={filter}>{filter}</span>)}
-          </div>
+          <nav aria-label="Ir a un tipo de habitación" className="my-9 flex flex-wrap justify-center gap-2">
+            {filters.map((filter, index) => <a className={`inline-flex min-h-11 items-center rounded-[999px] px-6 py-2 text-xs font-bold uppercase transition hover:-translate-y-0.5 ${index === 0 ? "bg-hotel-forest text-white" : "border border-hotel-line bg-white text-hotel-forest hover:border-hotel-gold"}`} href={filter.href} key={filter.href}>{filter.label}</a>)}
+          </nav>
           {rooms.length ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
               {rooms.map((room) => <div className="scroll-mt-28" id={room.slug} key={room.id}><RoomCard room={room} /></div>)}
             </div>
           ) : <p className="rounded-[8px] border border-hotel-line bg-hotel-ivory p-6 text-center text-sm text-hotel-muted">Las habitaciones públicas no están disponibles en este momento.</p>}
-          <div className="mt-10 flex justify-center">
-            <LinkButton href="#habitacion-ejecutiva" variant="outline">Ver todas las habitaciones <ArrowRight className="size-4" /></LinkButton>
-          </div>
         </div>
       </section>
       <section className="hotel-dark-gradient py-14 text-white">

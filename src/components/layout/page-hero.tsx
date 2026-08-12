@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -56,12 +56,12 @@ export function PageHero({ eyebrow, title, description, image, images, showWeath
 
   return (
     <section aria-label={title} className="relative" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onTouchStart={(event) => { touch.current = event.touches[0]?.clientX ?? null; }} onTouchEnd={(event) => { if (touch.current === null) return; const delta = (event.changedTouches[0]?.clientX ?? touch.current) - touch.current; if (Math.abs(delta) > 45) move(delta > 0 ? -1 : 1); touch.current = null; }}>
-      <div className="relative min-h-[620px] overflow-hidden bg-hotel-forest-900 text-white md:min-h-[680px] xl:min-h-[min(850px,92vh)]">
+      <div className="relative min-h-[clamp(560px,calc(100svh-5rem),760px)] overflow-hidden bg-hotel-forest-900 text-white">
         {slides.map((src, index) => (
           <Image
             alt=""
             aria-hidden
-            className={cn("object-cover transition-opacity duration-1000 ease-out", index === current ? "opacity-80" : "opacity-0")}
+            className={cn("object-cover transition-opacity duration-1000 ease-out", index === current ? "opacity-100" : "opacity-0")}
             fill
             key={src}
             loading={index === 0 ? "eager" : "lazy"}
@@ -70,8 +70,8 @@ export function PageHero({ eyebrow, title, description, image, images, showWeath
             src={src}
           />
         ))}
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgb(0_20_14/.88),rgb(0_47_34/.62)_48%,rgb(0_0_0/.18)),linear-gradient(180deg,rgb(0_0_0/.35),transparent_32%,rgb(0_0_0/.42))]" />
-        <div className="hotel-container relative z-10 grid min-h-[620px] items-center gap-10 pb-28 pt-28 md:min-h-[680px] md:pt-32 xl:min-h-[min(850px,92vh)] lg:grid-cols-[1fr_250px]">
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgb(0_23_16/.78),rgb(0_38_27/.42)_52%,rgb(0_0_0/.12)),linear-gradient(180deg,rgb(0_0_0/.22),transparent_35%,rgb(0_18_13/.44))]" />
+        <div className="hotel-container relative z-10 grid min-h-[clamp(560px,calc(100svh-5rem),760px)] items-center gap-10 pb-28 pt-24 md:pt-28 lg:grid-cols-[1fr_250px]">
           <div className="max-w-4xl">
             <p className="mb-5 text-xs font-bold uppercase tracking-[0.32em] text-hotel-gold">{eyebrow}</p>
             <h1 className="hotel-serif max-w-4xl text-5xl font-bold leading-[0.96] sm:text-6xl md:text-7xl xl:text-8xl">{title}</h1>
@@ -81,7 +81,7 @@ export function PageHero({ eyebrow, title, description, image, images, showWeath
           </div>
           {showWeather ? <WeatherTimeCard /> : null}
         </div>
-        {slides.length > 1 ? <><button aria-label="Imagen anterior" className="absolute left-3 top-1/2 z-20 grid size-11 -translate-y-1/2 place-items-center rounded-full border border-white/35 bg-black/35 text-white backdrop-blur transition hover:bg-white hover:text-hotel-forest" onClick={() => move(-1)} type="button"><ChevronLeft /></button><button aria-label="Imagen siguiente" className="absolute right-3 top-1/2 z-20 grid size-11 -translate-y-1/2 place-items-center rounded-full border border-white/35 bg-black/35 text-white backdrop-blur transition hover:bg-white hover:text-hotel-forest" onClick={() => move(1)} type="button"><ChevronRight /></button><div className="absolute bottom-24 left-1/2 z-20 flex -translate-x-1/2 gap-2 md:bottom-28">{slides.map((_, index) => <button aria-label={`Mostrar imagen ${index + 1}`} aria-current={index === current} className={cn("h-2.5 rounded-full border border-white/80 transition-all", index === current ? "w-9 bg-hotel-gold" : "w-2.5 bg-black/35 hover:bg-white/70")} key={index} onClick={() => setCurrent(index)} type="button" />)}</div></> : null}
+        {slides.length > 1 ? <div className="absolute bottom-24 left-1/2 z-20 flex -translate-x-1/2 gap-2 md:bottom-28">{slides.map((_, index) => <button aria-label={`Mostrar imagen ${index + 1}`} aria-current={index === current ? "true" : undefined} className={cn("min-h-11 min-w-11 rounded-full border border-transparent p-4 transition-all focus-visible:border-hotel-gold", index === current ? "after:block after:h-2.5 after:w-9 after:rounded-full after:bg-hotel-gold" : "after:block after:size-2.5 after:rounded-full after:border after:border-white/80 after:bg-black/30 hover:after:bg-white/80")} key={index} onClick={() => setCurrent(index)} type="button" />)}</div> : null}
       </div>
       <div className={cn(bookingVariant === "below" && "pt-16")}><BookingBar rooms={bookingRooms} /></div>
     </section>

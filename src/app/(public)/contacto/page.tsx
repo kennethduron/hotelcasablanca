@@ -5,7 +5,7 @@ import { createContactMessageAction } from "@/app/(public)/contacto/actions";
 import { PageHero } from "@/components/layout/page-hero";
 import { SectionHeading } from "@/components/layout/section-heading";
 import { TourismMapDynamic } from "@/components/maps/tourism-map-dynamic";
-import { Button } from "@/components/ui/button";
+import { Button, LinkButton } from "@/components/ui/button";
 import { destinationsRepository } from "@/lib/repositories/destinations-repository";
 import { roomsRepository } from "@/lib/repositories/rooms-repository";
 import { settingsRepository } from "@/lib/repositories/settings-repository";
@@ -45,10 +45,10 @@ export default async function ContactPage() {
         showWeather={false}
         bookingRooms={rooms}
       />
-      <section className="py-16">
+      <section className="py-14 md:py-16">
         <div className="hotel-container">
           <SectionHeading eyebrow="Contacto" title="Ponte en contacto con nosotros" description="Estamos listos para atender tus consultas, reservas o cualquier solicitud especial." />
-          <div className="mt-10 grid gap-8 xl:grid-cols-[0.75fr_1fr_0.95fr]">
+          <div className="mt-10 grid items-start gap-7 lg:grid-cols-[0.72fr_1.18fr] xl:grid-cols-[0.68fr_1.08fr_0.9fr]">
             <aside className="space-y-5">
               <h2 className="hotel-serif text-3xl font-bold text-hotel-forest">Información de contacto</h2>
               {contactItems.map((item) => <div className="flex gap-4" key={item.label}><div className="grid size-14 shrink-0 place-items-center rounded-[8px] bg-hotel-forest text-hotel-gold"><item.icon className="size-6" /></div><div><h3 className="font-bold text-hotel-forest">{item.label}</h3><p className="mt-1 text-sm leading-6 text-hotel-muted">{item.value}</p></div></div>)}
@@ -64,7 +64,10 @@ export default async function ContactPage() {
               <label className="mt-4 block text-sm font-medium text-hotel-ink">Mensaje<textarea className="mt-2 h-36 w-full rounded-[6px] border border-hotel-line bg-white p-3 outline-none transition focus:border-hotel-gold" name="message" placeholder="Escribe tu mensaje aquí..." /></label>
               <Button className="mt-5 w-full" type="submit" variant="forest">Enviar mensaje <Send className="size-4" /></Button>
             </form>
-            <div id="mapa"><TourismMapDynamic compact destinations={destinations} /></div>
+            <aside className="scroll-mt-28 lg:col-span-2 xl:col-span-1" id="mapa">
+              <TourismMapDynamic compact destinations={destinations.slice(0, 2)} />
+              <LinkButton className="mt-4 w-full" href="/entorno#turismo" variant="outlineDark">Explorar todos los destinos</LinkButton>
+            </aside>
           </div>
         </div>
       </section>

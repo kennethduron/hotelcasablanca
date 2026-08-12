@@ -53,8 +53,36 @@ body {
 }
 
 a {
-  color: inherit;
   text-decoration: none;
+}
+
+button:not(:disabled),
+a[href],
+summary,
+select,
+input[type="date"] {
+  cursor: pointer;
+}
+
+button:disabled,
+input:disabled,
+select:disabled {
+  cursor: not-allowed;
+}
+
+button,
+a[href],
+summary,
+select,
+input,
+textarea {
+  transition-duration: 200ms;
+}
+
+button:not(:disabled):active,
+a[href]:active,
+summary:active {
+  transform: scale(0.98);
 }
 
 ::selection {
@@ -131,6 +159,16 @@ a {
 :focus-visible {
   outline: 3px solid var(--hotel-gold);
   outline-offset: 3px;
+}
+
+@media (hover: hover) {
+  [data-draggable="true"] {
+    cursor: grab;
+  }
+
+  [data-draggable="true"]:active {
+    cursor: grabbing;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

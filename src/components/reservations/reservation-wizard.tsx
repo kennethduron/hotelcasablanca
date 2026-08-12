@@ -210,7 +210,7 @@ function Field({ label, value, onChange, placeholder, type = "text", className =
 }
 
 function Stepper({ label, min, value, onChange }: { label: string; min: number; value: number; onChange: (value: number) => void }) {
-  return <div><p className="text-sm font-bold text-hotel-forest">{label}</p><div className="mt-2 flex h-12 items-center justify-between rounded-[6px] border border-hotel-line bg-hotel-ivory px-2"><button aria-label={`Reducir ${label}`} className="grid size-8 place-items-center rounded bg-white text-hotel-forest" onClick={() => onChange(Math.max(min, value - 1))} type="button">−</button><strong>{value}</strong><button aria-label={`Aumentar ${label}`} className="grid size-8 place-items-center rounded bg-hotel-forest text-white" onClick={() => onChange(value + 1)} type="button">+</button></div></div>;
+  return <div><p className="text-sm font-bold text-hotel-forest">{label}</p><div className="mt-2 flex h-12 items-center justify-between rounded-[6px] border border-hotel-line bg-hotel-ivory px-2"><button aria-label={`Reducir ${label}`} className="grid size-8 place-items-center rounded bg-white text-hotel-forest disabled:opacity-45" disabled={value <= min} onClick={() => onChange(Math.max(min, value - 1))} type="button">−</button><strong>{value}</strong><button aria-label={`Aumentar ${label}`} className="grid size-8 place-items-center rounded bg-hotel-forest text-white" onClick={() => onChange(value + 1)} type="button">+</button></div></div>;
 }
 
 function SelectField({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (value: string) => void }) {
